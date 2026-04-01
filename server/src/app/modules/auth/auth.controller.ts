@@ -166,17 +166,27 @@ export const authController = {
       return;
     }
 
-    let session;
-    try {
-      session = await authService.getSession(sessionToken);
-    } catch {
+    // Use better-auth API directly with all raw cookies from the request
+    const { auth } = await import("../../lib/auth");
+    const allCookies = req.headers.cookie || "";
+
+    const betterAuthSession = await auth.api.getSession({
+      headers: new Headers({ cookie: allCookies }),
+    });
+
+    if (!betterAuthSession?.user) {
       console.log(
-        "Google callback - Session lookup failed for token:",
-        sessionToken,
+        "Google callback - better-auth getSession failed. Cookie header:",
+        allCookies,
       );
       res.redirect(`${clientUrl}/login?error=session_invalid`);
       return;
     }
+
+    const session = {
+      ...betterAuthSession.session,
+      user: betterAuthSession.user,
+    };
     const user = session.user;
     const tokenPayload = { userId: user.id, email: user.email };
 
