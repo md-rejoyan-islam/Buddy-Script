@@ -170,15 +170,20 @@ export const authController = {
     const { auth } = await import("../../lib/auth");
     const allCookies = req.headers.cookie || "";
 
-    const betterAuthSession = await auth.api.getSession({
-      headers: new Headers({ cookie: allCookies }),
-    });
+    console.log("Google callback - cookie header:", allCookies);
+    console.log("Google callback - parsed cookies:", JSON.stringify(req.cookies));
+
+    let betterAuthSession;
+    try {
+      betterAuthSession = await auth.api.getSession({
+        headers: new Headers({ cookie: allCookies }),
+      });
+      console.log("Google callback - session result:", !!betterAuthSession?.user);
+    } catch (err) {
+      console.log("Google callback - getSession error:", err instanceof Error ? err.message : err);
+    }
 
     if (!betterAuthSession?.user) {
-      console.log(
-        "Google callback - better-auth getSession failed. Cookie header:",
-        allCookies,
-      );
       res.redirect(`${clientUrl}/login?error=session_invalid`);
       return;
     }
