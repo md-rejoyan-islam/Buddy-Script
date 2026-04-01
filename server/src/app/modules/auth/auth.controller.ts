@@ -198,16 +198,17 @@ export const authController = {
     const accessToken = createToken(tokenPayload, secret.access_token_expiry);
     const refreshToken = createToken(tokenPayload, secret.refresh_token_expiry);
 
-    setCookie(res, "better_auth.session_token", sessionToken, {
-      maxAge: secret.session_token_max_age,
-    });
-    setCookie(res, "access_token", accessToken, {
-      maxAge: secret.access_token_max_age,
-    });
-    setCookie(res, "refresh_token", refreshToken, {
-      maxAge: secret.refresh_token_max_age,
+    // Pass tokens via URL params — client will set cookies on its own domain
+    const params = new URLSearchParams({
+      success: "true",
+      accessToken,
+      refreshToken,
+      sessionToken,
+      accessTokenMaxAge: String(secret.access_token_max_age),
+      refreshTokenMaxAge: String(secret.refresh_token_max_age),
+      sessionTokenMaxAge: String(secret.session_token_max_age),
     });
 
-    res.redirect(`${clientUrl}/auth/google/callback?success=true`);
+    res.redirect(`${clientUrl}/auth/google/callback?${params.toString()}`);
   }),
 };

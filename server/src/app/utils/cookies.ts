@@ -24,7 +24,7 @@ export function setCookie(
   res.cookie(name, value, {
     httpOnly: options.httpOnly ?? true,
     secure: options.secure ?? IS_PRODUCTION,
-    sameSite: options.sameSite ?? "lax",
+    sameSite: options.sameSite ?? (IS_PRODUCTION ? "none" : "lax"),
     maxAge: options.maxAge ?? DEFAULT_MAX_AGE,
     path: options.path ?? "/",
   });
@@ -44,7 +44,7 @@ export function removeCookie(res: Response, name: string) {
   res.clearCookie(name, {
     httpOnly: true,
     secure: IS_PRODUCTION,
-    sameSite: "none",
+    sameSite: IS_PRODUCTION ? "none" : "lax",
     path: "/",
   });
 }

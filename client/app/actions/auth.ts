@@ -83,6 +83,20 @@ export async function registerAction(
   };
 }
 
+export async function saveGoogleTokens(tokens: {
+  accessToken: string;
+  refreshToken: string;
+  sessionToken: string;
+  expiresIn: {
+    accessToken: number;
+    refreshToken: number;
+    sessionToken: number;
+  };
+}): Promise<ActionResult> {
+  await setAuthCookies(tokens);
+  return { success: true, message: "Tokens saved" };
+}
+
 export async function logoutAction(): Promise<ActionResult> {
   await deleteAuthCookies();
   return { success: true, message: "Logged out successfully" };
