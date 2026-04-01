@@ -155,7 +155,7 @@ export const authController = {
       req.cookies?.["better-auth.session_token"] ||
       req.cookies?.["better_auth.session_token"];
 
-    const clientUrl = secret.clientWhiteList[0] || "http://localhost:3000";
+    const clientUrl = secret.client_url;
 
     if (!sessionToken) {
       console.log(

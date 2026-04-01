@@ -27,6 +27,9 @@ const envSchema = z.object({
 
   // CORS
   CLIENT_WHITE_LIST: z.string().min(1, "CLIENT_WHITE_LIST is required"),
+  CLIENT_URL: z
+    .url("CLIENT_URL must be a valid URL")
+    .default("http://localhost:3000"),
 
   // Redis
   REDIS_URL: z.string().min(1, "REDIS_URL is required"),
@@ -67,6 +70,7 @@ const secret = {
   s3_bucket: env.S3_BUCKET,
   clientWhiteList: env.CLIENT_WHITE_LIST.split(",").map((url) => url.trim()),
   redis_url: env.REDIS_URL,
+  client_url: env.CLIENT_URL,
 } as const;
 
 export default secret;
