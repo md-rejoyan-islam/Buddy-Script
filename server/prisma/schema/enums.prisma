@@ -1,0 +1,16 @@
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+  DELETED
+}
+
+enum PostVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum LikeableType {
+  POST
+  COMMENT
+  REPLY
+}

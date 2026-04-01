@@ -1,0 +1,42 @@
+model Comment {
+  id        String    @id @default(uuid(7))
+  content   String    @db.Text
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  replies Reply[]
+  likes   Like[]
+
+  @@index([postId])
+  @@index([authorId])
+  @@map("comments")
+}
+
+model Reply {
+  id        String    @id @default(uuid(7))
+  content   String    @db.Text
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  commentId String
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  likes Like[]
+
+  @@index([commentId])
+  @@index([authorId])
+  @@map("replies")
+}

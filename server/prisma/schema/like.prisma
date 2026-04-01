@@ -1,0 +1,24 @@
+model Like {
+  id           String       @id @default(uuid(7))
+  likeableType LikeableType
+  reaction     String       @default("like")
+  createdAt    DateTime     @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId    String?
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  commentId String?
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  replyId   String?
+  reply     Reply?   @relation(fields: [replyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, likeableType, postId])
+  @@unique([userId, likeableType, commentId])
+  @@unique([userId, likeableType, replyId])
+  @@index([userId])
+  @@map("likes")
+}
