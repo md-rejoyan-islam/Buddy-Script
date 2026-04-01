@@ -1,4 +1,5 @@
 import { Router } from "express";
+import fs from "fs";
 import path from "path";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
@@ -11,11 +12,12 @@ import shareRoutes from "../modules/share/share.routes";
 
 const router = Router();
 
-// Swagger UI
-const swaggerDocument = YAML.load(
-  path.join(__dirname, "../../../docs/swagger.yaml"),
-);
-router.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// Swagger UI — only load if file exists
+const swaggerPath = path.join(process.cwd(), "docs/swagger.yaml");
+if (fs.existsSync(swaggerPath)) {
+  const swaggerDocument = YAML.load(swaggerPath);
+  router.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+}
 
 router.use("/auth", authRoutes);
 router.use("/posts", postRoutes);

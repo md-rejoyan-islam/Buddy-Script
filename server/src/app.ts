@@ -1,7 +1,7 @@
+import { toNodeHandler } from "better-auth/node";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { Express, Request, Response } from "express";
-import { toNodeHandler } from "better-auth/node";
 
 import { auth } from "./app/lib/auth";
 import globalErrorHandler from "./app/middlewares/error_handler";
