@@ -29,10 +29,7 @@ const envSchema = z.object({
   CLIENT_WHITE_LIST: z.string().min(1, "CLIENT_WHITE_LIST is required"),
 
   // Redis
-  REDIS_HOST: z.string().min(1, "REDIS_HOST is required"),
-  REDIS_PORT: z.coerce.number().default(6379),
-  REDIS_PASSWORD: z.string().default(""),
-  REDIS_DB: z.coerce.number().default(0),
+  REDIS_URL: z.string().min(1, "REDIS_URL is required"),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -69,10 +66,7 @@ const secret = {
   s3_secret_key: env.S3_SECRET_KEY,
   s3_bucket: env.S3_BUCKET,
   clientWhiteList: env.CLIENT_WHITE_LIST.split(",").map((url) => url.trim()),
-  redis_host: env.REDIS_HOST,
-  redis_port: env.REDIS_PORT,
-  redis_password: env.REDIS_PASSWORD,
-  redis_db: env.REDIS_DB,
+  redis_url: env.REDIS_URL,
 } as const;
 
 export default secret;
