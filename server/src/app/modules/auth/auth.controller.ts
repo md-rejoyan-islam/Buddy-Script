@@ -108,21 +108,75 @@ export const authController = {
       removeCookie(res, "access_token");
       removeCookie(res, "refresh_token");
       removeCookie(res, "better_auth.session_token");
-      res.status(401).json({ success: false, message: "Invalid refresh token" });
+      res
+        .status(401)
+        .json({ success: false, message: "Invalid refresh token" });
     }
+  }),
+
+  googleRedirect: asyncHandler(async (req: Request, res: Response) => {
+    const callbackURL = `${secret.better_auth_url}/api/v1/auth/google/callback`;
+
+    const response = await fetch(
+      `${secret.better_auth_url}/api/auth/sign-in/social`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ provider: "google", callbackURL }),
+        redirect: "manual",
+      },
+    );
+
+    // better-auth returns JSON with { url, redirect: true }
+    if (response.ok) {
+      const data = await response.json();
+      if (data.url) {
+        // Forward the state cookie from better-auth to the browser
+        const setCookies = response.headers.getSetCookie?.() || [];
+        for (const cookie of setCookies) {
+          res.setHeader("Set-Cookie", cookie);
+        }
+        res.redirect(data.url);
+        return;
+      }
+    }
+
+    const clientUrl = secret.clientWhiteList[0] || "http://localhost:3000";
+    res.redirect(`${clientUrl}/login?error=google_init_failed`);
   }),
 
   googleCallback: asyncHandler(async (req: Request, res: Response) => {
     // After better-auth handles Google OAuth, the session cookie is set.
-    // Read it and create our custom JWT tokens.
-    const sessionToken = getCookie(req, "better-auth.session_token");
+    // Try all possible cookie names better-auth might use.
+    const sessionToken =
+      getCookie(req, "better-auth.session_token") ||
+      getCookie(req, "better_auth.session_token") ||
+      getCookie(req, "__Secure-better-auth.session_token") ||
+      req.cookies?.["better-auth.session_token"] ||
+      req.cookies?.["better_auth.session_token"];
+
+    const clientUrl = secret.clientWhiteList[0] || "http://localhost:3000";
 
     if (!sessionToken) {
-      res.redirect(`${process.env.CLIENT_WHITE_LIST?.split(",")[0] || "http://localhost:3000"}/login?error=google_auth_failed`);
+      console.log(
+        "Google callback - No session token found. Cookies:",
+        req.cookies,
+      );
+      res.redirect(`${clientUrl}/login?error=google_auth_failed`);
       return;
     }
 
-    const session = await authService.getSession(sessionToken);
+    let session;
+    try {
+      session = await authService.getSession(sessionToken);
+    } catch {
+      console.log(
+        "Google callback - Session lookup failed for token:",
+        sessionToken,
+      );
+      res.redirect(`${clientUrl}/login?error=session_invalid`);
+      return;
+    }
     const user = session.user;
     const tokenPayload = { userId: user.id, email: user.email };
 
@@ -139,7 +193,6 @@ export const authController = {
       maxAge: secret.refresh_token_max_age,
     });
 
-    const clientUrl = process.env.CLIENT_WHITE_LIST?.split(",")[0] || "http://localhost:3000";
     res.redirect(`${clientUrl}/auth/google/callback?success=true`);
   }),
 };

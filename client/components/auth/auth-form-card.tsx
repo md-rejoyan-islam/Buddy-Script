@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import GoogleButton from "./google-button";
 
 const AuthFormCard = ({
   title,
@@ -35,23 +36,7 @@ const AuthFormCard = ({
         </h4>
 
         {/* Google sign-in button */}
-        <a
-          href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/auth/sign-in/social?provider=google&callbackURL=${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/v1/auth/google/callback`}
-          className="border border-solid border-[#F0F2F5] bg-white rounded-md py-3 px-15 flex items-center justify-center mb-10 w-full max-xl:px-10 no-underline"
-        >
-          <Image
-            src="/images/google.svg"
-            alt="Image"
-            width={20}
-            height={20}
-            className="max-w-5 h-5 mr-2"
-          />
-          <span className="font-medium text-base leading-[1.4] text-(--color2) shrink-0 max-xl:text-[13px]">
-            {from === "login"
-              ? "Or sign-in with google"
-              : "Register with google"}
-          </span>
-        </a>
+        <GoogleButton from={from} />
 
         {/* Or divider */}
         <div className="text-center relative mb-10 flex items-center justify-center">

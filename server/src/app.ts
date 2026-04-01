@@ -14,7 +14,7 @@ const app: Express = express();
 app.use(cors(corsOptions));
 
 // Better Auth handler — must be before body parsers
-app.all("/api/auth/*", toNodeHandler(auth));
+app.all("/api/auth/{*splat}", toNodeHandler(auth));
 
 app.use(cookieParser());
 app.use(express.json());

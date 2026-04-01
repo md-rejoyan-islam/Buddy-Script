@@ -38,6 +38,25 @@ export const authService = {
   },
 
   async getSession(token: string) {
+    // Try better-auth's API first (handles hashed tokens)
+    try {
+      const session = await auth.api.getSession({
+        headers: new Headers({
+          cookie: `better-auth.session_token=${token}`,
+        }),
+      });
+
+      if (session?.user && session?.session) {
+        return {
+          ...session.session,
+          user: session.user,
+        };
+      }
+    } catch {
+      // Fallback to direct DB lookup (for raw tokens)
+    }
+
+    // Fallback: direct DB query (for our own session tokens)
     const dbSession = await prisma.session.findUnique({
       where: {
         token,

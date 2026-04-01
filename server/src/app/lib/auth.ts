@@ -14,17 +14,39 @@ export const auth = betterAuth({
     additionalFields: {
       status: {
         type: "string",
-        required: true,
+        required: false,
         enum: UserStatus,
         default: UserStatus.ACTIVE,
       },
       firstName: {
         type: "string",
-        required: true,
+        required: false,
+        default: "",
       },
       lastName: {
         type: "string",
-        required: true,
+        required: false,
+        default: "",
+      },
+    },
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          // Auto-fill firstName/lastName from name for social logins
+          if (user.name && (!user.firstName || !user.lastName)) {
+            const parts = user.name.split(" ");
+            return {
+              data: {
+                ...user,
+                firstName: user.firstName || parts[0] || "",
+                lastName: user.lastName || parts.slice(1).join(" ") || "",
+              },
+            };
+          }
+          return { data: user };
+        },
       },
     },
   },
