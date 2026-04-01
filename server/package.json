@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "bun --watch src/server.ts --env-file=.env",
     "start": "bun src/server.ts",
-    "build": "bun build src/server.ts --outdir dist",
+    "build": "bun build src/server.ts --outdir dist --target bun",
     "prisma:init": "bunx --bun prisma",
     "prisma:generate": "bunx --bun prisma generate",
     "prisma:migrate": "bunx --bun prisma migrate dev",

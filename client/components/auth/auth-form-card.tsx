@@ -34,10 +34,10 @@ const AuthFormCard = ({
           {subtitle}
         </h4>
 
-        {/* Google register button */}
-        <button
-          type="button"
-          className="border border-solid border-[#F0F2F5] bg-white rounded-md py-3 px-15 flex items-center justify-center mb-10 w-full max-xl:px-10"
+        {/* Google sign-in button */}
+        <a
+          href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/auth/sign-in/social?provider=google&callbackURL=${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/v1/auth/google/callback`}
+          className="border border-solid border-[#F0F2F5] bg-white rounded-md py-3 px-15 flex items-center justify-center mb-10 w-full max-xl:px-10 no-underline"
         >
           <Image
             src="/images/google.svg"
@@ -51,7 +51,7 @@ const AuthFormCard = ({
               ? "Or sign-in with google"
               : "Register with google"}
           </span>
-        </button>
+        </a>
 
         {/* Or divider */}
         <div className="text-center relative mb-10 flex items-center justify-center">

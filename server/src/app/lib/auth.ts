@@ -55,5 +55,5 @@ export const auth = betterAuth({
   //     maxAge: 5 * 60, // cache for 5 minutes
   //   },
   // },
-  trustedOrigins: ["http://localhost:5173"],
+  trustedOrigins: ["http://localhost:3000", "http://localhost:5173"],
 });

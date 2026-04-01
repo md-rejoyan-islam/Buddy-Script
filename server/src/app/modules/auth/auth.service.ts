@@ -84,16 +84,4 @@ export const authService = {
     return { user, accessToken: newAccessToken, refreshToken: newRefreshToken };
   },
 
-  async loginWithGoogle(data: {
-    email: string;
-    firstName: string;
-    lastName: string;
-  }) {
-    await auth.api.signInSocial({
-      body: {
-        provider: "google",
-        callbackURL: "http://localhost:5173/auth/google/callback",
-      },
-    });
-  },
 };
