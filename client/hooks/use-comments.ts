@@ -112,6 +112,40 @@ export function useLikeComment(postId: string) {
   });
 }
 
+export function useDeleteComment(postId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (commentId: string) => {
+      const res = await clientFetch(`/comments/${commentId}`, { method: "DELETE" });
+      if (!res.success) throw new Error(res.message);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "feed"] });
+    },
+  });
+}
+
+export function useUpdateComment(postId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ commentId, content }: { commentId: string; content: string }) => {
+      const res = await clientFetch(`/comments/${commentId}`, {
+        method: "PATCH",
+        body: { content },
+      });
+      if (!res.success) throw new Error(res.message);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+    },
+  });
+}
+
 export function useReplies(commentId: string, enabled: boolean) {
   return useQuery({
     queryKey: ["replies", commentId],
@@ -143,6 +177,40 @@ export function useCreateReply(commentId: string, postId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["replies", commentId] });
       queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+    },
+  });
+}
+
+export function useDeleteReply(commentId: string, postId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (replyId: string) => {
+      const res = await clientFetch(`/replies/${replyId}`, { method: "DELETE" });
+      if (!res.success) throw new Error(res.message);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["replies", commentId] });
+      queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+    },
+  });
+}
+
+export function useUpdateReply(commentId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ replyId, content }: { replyId: string; content: string }) => {
+      const res = await clientFetch(`/replies/${replyId}`, {
+        method: "PATCH",
+        body: { content },
+      });
+      if (!res.success) throw new Error(res.message);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["replies", commentId] });
     },
   });
 }

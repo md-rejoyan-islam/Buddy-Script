@@ -1,7 +1,7 @@
 import secret from "../../../config/secret";
 import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
-import { AppError, createToken, verifyToken } from "../../utils";
+import { AppError, cache, createToken, verifyToken } from "../../utils";
 import randomAvatar from "../../utils/random-avatar";
 import { LoginInput, RegisterInput } from "./auth.validation";
 
@@ -81,9 +81,19 @@ export const authService = {
     });
   },
   async findById(id: string) {
-    return prisma.user.findUnique({
+    const cacheKey = `user:${id}`;
+    const cached = await cache.get(cacheKey);
+    if (cached) return cached;
+
+    const user = await prisma.user.findUnique({
       where: { id },
     });
+
+    if (user) {
+      await cache.set(cacheKey, user, 300); // 5 minutes
+    }
+
+    return user;
   },
 
   async refreshToken(refreshToken: string) {

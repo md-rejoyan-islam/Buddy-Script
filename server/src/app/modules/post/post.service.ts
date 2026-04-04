@@ -117,11 +117,28 @@ export const postService = {
       },
     });
 
-    if (post) {
-      await cache.set(cacheKey, post, POST_TTL);
-    }
+    if (!post) return null;
 
-    return post;
+    // Fetch recent likers (up to 5)
+    const recentLikes = await prisma.like.findMany({
+      where: { postId, likeableType: "POST" },
+      select: {
+        user: {
+          select: { id: true, firstName: true, lastName: true, image: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 5,
+    });
+
+    const result = {
+      ...post,
+      recentLikers: recentLikes.map((l) => l.user),
+    };
+
+    await cache.set(cacheKey, result, POST_TTL);
+
+    return result;
   },
 
   async update(postId: string, authorId: string, data: UpdatePostInput) {

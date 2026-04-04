@@ -1,5 +1,4 @@
 import FeedContent from "@/components/feed/feed-content";
-import FeedLayout from "@/components/feed/feed-layout";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -23,9 +22,5 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  return (
-    <FeedLayout>
-      <FeedContent />
-    </FeedLayout>
-  );
+  return <FeedContent />;
 }

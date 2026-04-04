@@ -18,7 +18,7 @@ export default function ShareModal({ isOpen, onClose, postId, mode }: Props) {
 
   if (!isOpen) return null;
 
-  const postLink = `${window.location.origin}/post/${postId}`;
+  const postLink = `${window.location.origin}/${postId}`;
 
   const handleCopy = async () => {
     try {
