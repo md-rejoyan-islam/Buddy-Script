@@ -209,6 +209,6 @@ export const authController = {
       sessionTokenMaxAge: String(secret.session_token_max_age),
     });
 
-    res.redirect(`${clientUrl}/auth/google/callback?${params.toString()}`);
+    res.redirect(`${clientUrl}/api/auth/google/callback?${params.toString()}`);
   }),
 };
