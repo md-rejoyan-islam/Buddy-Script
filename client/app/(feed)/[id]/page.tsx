@@ -1,5 +1,5 @@
-import { apiProxy } from "@/lib/api";
 import type { Post } from "@/hooks/use-feed";
+import { apiProxy } from "@/lib/api";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import PostDetail from "./post-detail";
@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const post = await getPost(id);
 
-  if (!post) {
+  if (!post?.id) {
     return {
       title: "Post Not Found - Buddy Script",
     };
@@ -61,7 +61,7 @@ export default async function PostPage({ params }: Props) {
   const { id } = await params;
   const post = await getPost(id);
 
-  if (!post) {
+  if (!post?.id) {
     notFound();
   }
 
