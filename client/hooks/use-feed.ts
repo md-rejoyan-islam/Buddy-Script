@@ -24,6 +24,7 @@ export type Post = {
     shares: number;
   };
   likes: { id: string; reaction: string }[];
+  recentLikers: { id: string; firstName: string; lastName: string; image: string | null }[];
 };
 
 type FeedResponse = {

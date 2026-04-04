@@ -1,5 +1,5 @@
-import { AppError } from "../../utils";
 import { prisma } from "../../lib/prisma";
+import { AppError } from "../../utils";
 import { CreatePostInput, UpdatePostInput } from "./post.validation";
 
 export const postService = {
@@ -46,8 +46,35 @@ export const postService = {
     });
 
     const hasMore = posts.length > limit;
-    const data = hasMore ? posts.slice(0, limit) : posts;
-    const nextCursor = hasMore ? data[data.length - 1].id : null;
+    const sliced = hasMore ? posts.slice(0, limit) : posts;
+    const nextCursor = hasMore ? sliced[sliced.length - 1].id : null;
+
+    // Fetch recent likers (up to 3) for each post
+    const postIds = sliced.map((p) => p.id);
+    const recentLikes = await prisma.like.findMany({
+      where: { postId: { in: postIds }, likeableType: "POST" },
+      select: {
+        postId: true,
+        user: {
+          select: { id: true, firstName: true, lastName: true, image: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    // Group by postId and take first 3 per post
+    const likersByPost = new Map<string, typeof recentLikes>();
+    for (const like of recentLikes) {
+      if (!like.postId) continue;
+      const arr = likersByPost.get(like.postId) || [];
+      if (arr.length < 5) arr.push(like);
+      likersByPost.set(like.postId, arr);
+    }
+
+    const data = sliced.map((post) => ({
+      ...post,
+      recentLikers: (likersByPost.get(post.id) || []).map((l) => l.user),
+    }));
 
     return { data, nextCursor };
   },

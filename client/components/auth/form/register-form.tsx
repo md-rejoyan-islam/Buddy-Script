@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import InputField from "../input-field";
+import PasswordField from "../password-field";
 import SubmitButton from "../submit-button";
 
 export default function RegisterForm() {
@@ -53,15 +54,13 @@ export default function RegisterForm() {
         registration={register("email")}
         error={errors.email}
       />
-      <InputField
+      <PasswordField
         label="Password"
-        type="password"
         registration={register("password")}
         error={errors.password}
       />
-      <InputField
+      <PasswordField
         label="Repeat Password"
-        type="password"
         registration={register("confirmPassword")}
         error={errors.confirmPassword}
       />

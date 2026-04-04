@@ -17,6 +17,7 @@ import {
 } from "@/hooks/use-comments";
 import { formatDistanceToNow } from "@/lib/utils";
 import LikesModal from "./likes-modal";
+import { AvatarGroup } from "@/components/ui/avatar";
 
 const REACTIONS: Record<string, string> = {
   like: "👍",
@@ -415,12 +416,20 @@ function FeedPostCard({ post, currentUserId }: { post: Post; currentUserId?: str
 
       {/* Reactions summary */}
       <div className="flex items-center justify-between px-6 mb-4">
-        <button
-          onClick={() => post._count.likes > 0 && setShowLikesModal(true)}
-          className="text-sm text-(--color5) font-medium bg-transparent border-none cursor-pointer hover:underline"
-        >
-          {post._count.likes} {post._count.likes === 1 ? "Like" : "Likes"}
-        </button>
+        {post._count.likes > 0 && post.recentLikers?.length > 0 ? (
+          <AvatarGroup
+            users={post.recentLikers.map((u) => ({
+              id: u.id,
+              src: u.image,
+              alt: `${u.firstName} ${u.lastName}`,
+            }))}
+            max={5}
+            total={post._count.likes}
+            onClick={() => setShowLikesModal(true)}
+          />
+        ) : (
+          <span />
+        )}
         <div className="flex items-center gap-4">
           <button
             onClick={() => setShowComments(!showComments)}

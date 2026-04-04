@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import InputField from "../input-field";
+import PasswordField from "../password-field";
 import SubmitButton from "../submit-button";
 
 export default function LoginForm() {
@@ -39,9 +40,8 @@ export default function LoginForm() {
         registration={register("email")}
         error={errors.email}
       />
-      <InputField
+      <PasswordField
         label="Password"
-        type="password"
         registration={register("password")}
         error={errors.password}
       />
