@@ -1,10 +1,13 @@
 import { prisma } from "../../lib/prisma";
-import { AppError } from "../../utils";
+import { AppError, cache } from "../../utils";
 import { CreatePostInput, UpdatePostInput } from "./post.validation";
+
+const FEED_TTL = 60; // 1 minute
+const POST_TTL = 120; // 2 minutes
 
 export const postService = {
   async create(authorId: string, data: CreatePostInput) {
-    return prisma.post.create({
+    const post = await prisma.post.create({
       data: {
         ...data,
         authorId,
@@ -16,12 +19,21 @@ export const postService = {
         _count: { select: { likes: true, comments: true, shares: true } },
       },
     });
+
+    // Invalidate all feed caches
+    await cache.delByPattern("feed:*");
+
+    return post;
   },
 
   async getFeed(
     currentUserId: string,
     { cursor, limit = 10 }: { cursor?: string; limit?: number },
   ) {
+    const cacheKey = `feed:${currentUserId}:${cursor || "first"}:${limit}`;
+    const cached = await cache.get<{ data: unknown[]; nextCursor: string | null }>(cacheKey);
+    if (cached) return cached;
+
     const posts = await prisma.post.findMany({
       where: {
         isDeleted: false,
@@ -49,7 +61,7 @@ export const postService = {
     const sliced = hasMore ? posts.slice(0, limit) : posts;
     const nextCursor = hasMore ? sliced[sliced.length - 1].id : null;
 
-    // Fetch recent likers (up to 3) for each post
+    // Fetch recent likers (up to 5) for each post
     const postIds = sliced.map((p) => p.id);
     const recentLikes = await prisma.like.findMany({
       where: { postId: { in: postIds }, likeableType: "POST" },
@@ -62,7 +74,7 @@ export const postService = {
       orderBy: { createdAt: "desc" },
     });
 
-    // Group by postId and take first 3 per post
+    // Group by postId and take first 5 per post
     const likersByPost = new Map<string, typeof recentLikes>();
     for (const like of recentLikes) {
       if (!like.postId) continue;
@@ -76,11 +88,18 @@ export const postService = {
       recentLikers: (likersByPost.get(post.id) || []).map((l) => l.user),
     }));
 
-    return { data, nextCursor };
+    const result = { data, nextCursor };
+    await cache.set(cacheKey, result, FEED_TTL);
+
+    return result;
   },
 
   async getById(postId: string, currentUserId: string) {
-    return prisma.post.findFirst({
+    const cacheKey = `post:${postId}:${currentUserId}`;
+    const cached = await cache.get(cacheKey);
+    if (cached) return cached;
+
+    const post = await prisma.post.findFirst({
       where: {
         id: postId,
         isDeleted: false,
@@ -97,10 +116,16 @@ export const postService = {
         },
       },
     });
+
+    if (post) {
+      await cache.set(cacheKey, post, POST_TTL);
+    }
+
+    return post;
   },
 
   async update(postId: string, authorId: string, data: UpdatePostInput) {
-    return prisma.post.update({
+    const post = await prisma.post.update({
       where: { id: postId, authorId },
       data,
       include: {
@@ -110,6 +135,14 @@ export const postService = {
         _count: { select: { likes: true, comments: true, shares: true } },
       },
     });
+
+    // Invalidate feed + post caches
+    await Promise.all([
+      cache.delByPattern("feed:*"),
+      cache.delByPattern(`post:${postId}:*`),
+    ]);
+
+    return post;
   },
 
   async delete(postId: string, authorId: string) {
@@ -121,9 +154,17 @@ export const postService = {
       throw AppError.notFound("Post not found or you are not the author");
     }
 
-    return prisma.post.update({
+    const result = await prisma.post.update({
       where: { id: postId },
       data: { isDeleted: true, deletedAt: new Date() },
     });
+
+    // Invalidate feed + post caches
+    await Promise.all([
+      cache.delByPattern("feed:*"),
+      cache.delByPattern(`post:${postId}:*`),
+    ]);
+
+    return result;
   },
 };

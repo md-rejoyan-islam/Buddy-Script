@@ -96,6 +96,10 @@
     resize: none !important;
   }
 
+  * {
+    scrollbar-width: none;
+  }
+
   ::-webkit-scrollbar {
     display: none;
   }

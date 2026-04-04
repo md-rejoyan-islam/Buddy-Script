@@ -1,4 +1,7 @@
-import { prisma } from '../../lib/prisma';
+import { prisma } from "../../lib/prisma";
+import { cache } from "../../utils";
+
+const SHARES_TTL = 120; // 2 minutes
 
 export const shareService = {
   async sharePost(userId: string, postId: string) {
@@ -20,16 +23,33 @@ export const shareService = {
       }),
     ]);
 
+    // Invalidate feed (share count) + shares list + post cache
+    await Promise.all([
+      cache.delByPattern("feed:*"),
+      cache.del(`shares:${postId}`),
+      cache.delByPattern(`post:${postId}:*`),
+    ]);
+
     return { alreadyShared: false };
   },
 
   async getShareUsers(postId: string) {
-    return prisma.share.findMany({
+    const cacheKey = `shares:${postId}`;
+    const cached = await cache.get(cacheKey);
+    if (cached) return cached;
+
+    const shares = await prisma.share.findMany({
       where: { postId },
       include: {
-        user: { select: { id: true, firstName: true, lastName: true, image: true } },
+        user: {
+          select: { id: true, firstName: true, lastName: true, image: true },
+        },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
+
+    await cache.set(cacheKey, shares, SHARES_TTL);
+
+    return shares;
   },
 };

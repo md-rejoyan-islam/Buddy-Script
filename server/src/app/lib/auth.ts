@@ -69,13 +69,13 @@ export const auth = betterAuth({
     //   });
     // },
   },
-  // session: {
-  //   expiresIn: 60 * 60 * 24 * 7, // 7 days
-  //   updateAge: 60 * 60 * 24, // refresh if older than 1 day
-  //   cookieCache: {
-  //     enabled: true,
-  //     maxAge: 5 * 60, // cache for 5 minutes
-  //   },
-  // },
+  session: {
+    expiresIn: 60 * 60 * 24 * 7, // 7 days
+    updateAge: 60 * 60 * 24, // refresh if older than 1 day
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60, // cache for 5 minutes
+    },
+  },
   trustedOrigins: ["http://localhost:3000", "http://localhost:5173"],
 });

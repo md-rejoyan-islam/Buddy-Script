@@ -1,8 +1,8 @@
-import { AppError } from "../../utils";
 import secret from "../../../config/secret";
 import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
-import { createToken, verifyToken } from "../../utils";
+import { AppError, createToken, verifyToken } from "../../utils";
+import randomAvatar from "../../utils/random-avatar";
 import { LoginInput, RegisterInput } from "./auth.validation";
 
 export const authService = {
@@ -14,6 +14,7 @@ export const authService = {
         password: data.password,
         firstName: data.firstName,
         lastName: data.lastName,
+        image: randomAvatar(),
         status: "ACTIVE",
       },
     });
@@ -97,10 +98,15 @@ export const authService = {
     }
 
     const tokenPayload = { userId: user.id, email: user.email };
-    const newAccessToken = createToken(tokenPayload, secret.access_token_expiry);
-    const newRefreshToken = createToken(tokenPayload, secret.refresh_token_expiry);
+    const newAccessToken = createToken(
+      tokenPayload,
+      secret.access_token_expiry,
+    );
+    const newRefreshToken = createToken(
+      tokenPayload,
+      secret.refresh_token_expiry,
+    );
 
     return { user, accessToken: newAccessToken, refreshToken: newRefreshToken };
   },
-
 };

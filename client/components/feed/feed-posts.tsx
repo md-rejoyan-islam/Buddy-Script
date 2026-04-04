@@ -17,6 +17,7 @@ import {
 } from "@/hooks/use-comments";
 import { formatDistanceToNow } from "@/lib/utils";
 import LikesModal from "./likes-modal";
+import ShareModal from "./share-modal";
 import { AvatarGroup } from "@/components/ui/avatar";
 
 const REACTIONS: Record<string, string> = {
@@ -224,6 +225,7 @@ function CommentItem({
 
 function CommentSection({ postId }: { postId: string }) {
   const { data: comments, isLoading } = useComments(postId);
+  const { data: currentUser } = useCurrentUser();
   const createComment = useCreateComment(postId);
   const [newComment, setNewComment] = useState("");
 
@@ -241,7 +243,7 @@ function CommentSection({ postId }: { postId: string }) {
         <div className="bg-(--comment-bg) rounded-[18px] py-1 px-2.5">
           <div className="flex items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/txt_img.png" alt="You" className="w-6.5 h-6.5 rounded-full object-cover shrink-0" />
+            <img src={currentUser?.image || "/default-avatar.png"} alt="You" className="w-6.5 h-6.5 rounded-full object-cover shrink-0" />
             <input
               type="text"
               className="bg-transparent border-none w-full h-10 px-2 text-sm text-(--color6) focus:outline-none placeholder:text-(--color7)"
@@ -292,6 +294,8 @@ function FeedPostCard({ post, currentUserId }: { post: Post; currentUserId?: str
   const [showComments, setShowComments] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showLikesModal, setShowLikesModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareModalMode, setShareModalMode] = useState<"share" | "list">("share");
   const menuRef = useRef<HTMLDivElement>(null);
 
   const authorName = `${post.author.firstName} ${post.author.lastName}`;
@@ -403,7 +407,7 @@ function FeedPostCard({ post, currentUserId }: { post: Post; currentUserId?: str
         </div>
 
         {post.content && (
-          <p className="font-normal text-sm leading-5.25 text-(--color6) mb-4">{post.content}</p>
+          <p className="font-normal text-sm leading-5.25 text-(--color6) mb-4 whitespace-pre-line">{post.content}</p>
         )}
 
         {post.image && (
@@ -437,9 +441,12 @@ function FeedPostCard({ post, currentUserId }: { post: Post; currentUserId?: str
           >
             {post._count.comments} Comment{post._count.comments !== 1 && "s"}
           </button>
-          <span className="text-sm text-(--color)">
+          <button
+            onClick={() => { if (post._count.shares > 0) { setShareModalMode("list"); setShowShareModal(true); } }}
+            className="text-sm text-(--color) bg-transparent border-none cursor-pointer hover:underline"
+          >
             {post._count.shares} Share{post._count.shares !== 1 && "s"}
-          </span>
+          </button>
         </div>
       </div>
 
@@ -489,7 +496,10 @@ function FeedPostCard({ post, currentUserId }: { post: Post; currentUserId?: str
           </svg>
           Comment
         </button>
-        <button className="flex-1 flex items-center justify-center h-11 gap-2 text-sm font-normal text-(--color6) bg-transparent rounded-md border-none transition-all duration-200 hover:bg-(--color9)">
+        <button
+          onClick={() => { setShareModalMode("share"); setShowShareModal(true); }}
+          className="flex-1 flex items-center justify-center h-11 gap-2 text-sm font-normal text-(--color6) bg-transparent rounded-md border-none transition-all duration-200 hover:bg-(--color9) cursor-pointer"
+        >
           <svg width="24" height="21" fill="none" viewBox="0 0 24 21">
             <path stroke="currentColor" strokeLinejoin="round" d="M23 10.5L12.917 1v5.429C3.267 6.429 1 13.258 1 20c2.785-3.52 5.248-5.429 11.917-5.429V20L23 10.5z" />
           </svg>
@@ -504,6 +514,13 @@ function FeedPostCard({ post, currentUserId }: { post: Post; currentUserId?: str
         onClose={() => setShowLikesModal(false)}
         type="post"
         id={post.id}
+      />
+
+      <ShareModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        postId={post.id}
+        mode={shareModalMode}
       />
     </div>
   );

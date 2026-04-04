@@ -12,7 +12,8 @@
     "prisma:migrate": "bunx --bun prisma migrate dev",
     "prisma:studio": "bunx --bun prisma studio",
     "prisma:format": "bunx --bun prisma format",
-    "prisma:validate": "bunx --bun prisma validate"
+    "prisma:validate": "bunx --bun prisma validate",
+    "prisma:reset": "bunx --bun prisma migrate reset"
   },
   "keywords": [],
   "author": "",
