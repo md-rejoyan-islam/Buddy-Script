@@ -710,11 +710,10 @@ export function FeedPostCard({
 
         {post.image && (
           <div className="mb-6">
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src={post.image}
               alt="Post"
-              width={600}
-              height={400}
               className="w-full h-auto rounded-md object-cover"
             />
           </div>
