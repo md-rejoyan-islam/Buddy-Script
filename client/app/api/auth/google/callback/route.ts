@@ -19,7 +19,9 @@ export async function GET(req: NextRequest) {
   const forwardedProto = req.headers.get("x-forwarded-proto") || "https";
   const baseUrl =
     process.env.NEXT_PUBLIC_APP_URL ||
-    (forwardedHost ? `${forwardedProto}://${forwardedHost}` : req.nextUrl.origin);
+    (forwardedHost
+      ? `${forwardedProto}://${forwardedHost}`
+      : req.nextUrl.origin);
 
   if (success === "true" && accessToken && refreshToken && sessionToken) {
     await setAuthCookies({
@@ -37,7 +39,9 @@ export async function GET(req: NextRequest) {
   }
 
   if (error) {
-    return NextResponse.redirect(new URL("/login?error=google_auth_failed", baseUrl));
+    return NextResponse.redirect(
+      new URL("/login?error=google_auth_failed", baseUrl),
+    );
   }
 
   return NextResponse.redirect(new URL("/login", baseUrl));
