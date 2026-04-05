@@ -2,7 +2,7 @@
 
 import Modal from "@/components/ui/modal";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { useCreatePost } from "@/hooks/use-post-mutations";
+import { useCreatePost, useUpdatePost } from "@/hooks/use-post-mutations";
 import {
   ChevronDownIcon,
   CloseIcon,
@@ -15,25 +15,41 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+type EditPost = {
+  id: string;
+  content: string;
+  image: string | null;
+  visibility: "PUBLIC" | "PRIVATE";
+};
+
 type Props = {
   isOpen: boolean;
   onClose: () => void;
+  editPost?: EditPost;
 };
 
-export default function CreatePostModal({ isOpen, onClose }: Props) {
-  const [content, setContent] = useState("");
-  const [visibility, setVisibility] = useState<"PUBLIC" | "PRIVATE">("PUBLIC");
+export default function CreatePostModal({ isOpen, onClose, editPost }: Props) {
+  const isEditMode = !!editPost;
+  const [content, setContent] = useState(editPost?.content || "");
+  const [visibility, setVisibility] = useState<"PUBLIC" | "PRIVATE">(
+    editPost?.visibility || "PUBLIC",
+  );
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    editPost?.image || null,
+  );
+  const [removeExistingImage, setRemoveExistingImage] = useState(false);
   const [showVisibilityMenu, setShowVisibilityMenu] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const createPost = useCreatePost();
+  const updatePost = useUpdatePost();
   const { data: user } = useCurrentUser();
 
+  // Focus the textarea whenever the modal opens
   useEffect(() => {
-    if (isOpen && textareaRef.current) {
-      textareaRef.current.focus();
+    if (isOpen) {
+      textareaRef.current?.focus();
     }
   }, [isOpen]);
 
@@ -42,10 +58,15 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
     if (file) {
       setImageFile(file);
       setImagePreview(URL.createObjectURL(file));
+      setRemoveExistingImage(false);
     }
   };
 
   const handleRemoveImage = () => {
+    // If the current preview is the existing server image, flag it for removal
+    if (isEditMode && editPost?.image && imagePreview === editPost.image) {
+      setRemoveExistingImage(true);
+    }
     setImageFile(null);
     setImagePreview(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -62,7 +83,8 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
   };
 
   const handleSubmit = async () => {
-    if (!content.trim() && !imageFile) {
+    const hasExistingImage = !!editPost?.image && !removeExistingImage;
+    if (!content.trim() && !imageFile && !hasExistingImage) {
       toast.error("Please write something or add an image");
       return;
     }
@@ -72,18 +94,32 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
     formData.append("visibility", visibility);
     if (imageFile) {
       formData.append("image", imageFile);
+    } else if (isEditMode && removeExistingImage) {
+      formData.append("removeImage", "true");
     }
 
     try {
-      await createPost.mutateAsync(formData);
-      toast.success("Post created successfully!");
+      if (isEditMode && editPost) {
+        await updatePost.mutateAsync({ postId: editPost.id, formData });
+        toast.success("Post updated successfully!");
+      } else {
+        await createPost.mutateAsync(formData);
+        toast.success("Post created successfully!");
+      }
       handleClose();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to create post");
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : isEditMode
+            ? "Failed to update post"
+            : "Failed to create post",
+      );
     }
   };
 
-  const canPost = content.trim() || imageFile;
+  const canPost = content.trim() || imageFile || editPost?.image;
+  const isPending = createPost.isPending || updatePost.isPending;
 
   const customHeader = (
     <div className="flex items-center justify-between p-4 border-b border-(--bcolor1) shrink-0">
@@ -93,17 +129,25 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
       >
         <CloseIcon />
       </button>
-      <h3 className="text-lg font-semibold text-(--color6)">Create Post</h3>
+      <h3 className="text-lg font-semibold text-(--color6)">
+        {isEditMode ? "Edit Post" : "Create Post"}
+      </h3>
       <button
         onClick={handleSubmit}
-        disabled={!canPost || createPost.isPending}
+        disabled={!canPost || isPending}
         className={`py-1.5 px-5 rounded-md text-sm font-semibold border-none transition-all ${
           canPost
             ? "bg-(--color5) text-white cursor-pointer hover:shadow-md"
             : "bg-(--bg3) text-(--color7) cursor-not-allowed"
         } disabled:opacity-60`}
       >
-        {createPost.isPending ? "Posting..." : "Post"}
+        {isPending
+          ? isEditMode
+            ? "Saving..."
+            : "Posting..."
+          : isEditMode
+            ? "Save"
+            : "Post"}
       </button>
     </div>
   );

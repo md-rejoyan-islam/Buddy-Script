@@ -146,7 +146,8 @@ In short, Better Auth is an investment in the long-term maintainability and secu
 - Infinite scroll feed with cursor-based pagination
 - Single post pages with SEO meta tags (OpenGraph + Twitter cards)
 - Server-rendered post detail pages for shareable links
-- Inline edit & delete for the post author
+- Three-dot menu on every post (owner only) with **Edit Post**, **Toggle Visibility (Public/Private)**, and **Delete Post** actions
+- Edit reuses the same Create Post modal pre-filled with the existing content, image, and visibility for a consistent UX
 
 ### Reactions
 

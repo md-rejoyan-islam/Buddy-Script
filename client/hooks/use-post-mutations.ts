@@ -91,6 +91,32 @@ export function useCreatePost() {
   });
 }
 
+export function useUpdatePost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      postId,
+      formData,
+    }: {
+      postId: string;
+      formData: FormData;
+    }) => {
+      const res = await fetch(`/api/v1/posts/${postId}`, {
+        method: "PATCH",
+        credentials: "include",
+        body: formData,
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message || "Failed to update post");
+      return json.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts", "feed"] });
+    },
+  });
+}
+
 export function useUpdateVisibility() {
   const queryClient = useQueryClient();
 

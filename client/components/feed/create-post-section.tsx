@@ -120,7 +120,12 @@ export default function CreatePostSection() {
         </div>
       </div>
 
-      <CreatePostModal isOpen={showModal} onClose={() => setShowModal(false)} />
+      {showModal && (
+        <CreatePostModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+        />
+      )}
     </>
   );
 }

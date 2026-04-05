@@ -38,6 +38,7 @@ import { formatDistanceToNow } from "@/lib/utils";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import CreatePostModal from "./create-post-modal";
 import LikesModal from "./likes-modal";
 import ShareModal from "./share-modal";
 
@@ -592,6 +593,7 @@ export function FeedPostCard({
   const [shareModalMode, setShareModalMode] = useState<"share" | "list">(
     "share",
   );
+  const [showEditModal, setShowEditModal] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const authorName = `${post.author.firstName} ${post.author.lastName}`;
@@ -673,6 +675,16 @@ export function FeedPostCard({
 
               {showMenu && (
                 <div className="absolute right-0 top-full mt-1 bg-(--bg2) border border-(--bcolor1) rounded-lg shadow-lg py-1 w-48 z-50">
+                  <button
+                    onClick={() => {
+                      setShowMenu(false);
+                      setShowEditModal(true);
+                    }}
+                    className="w-full text-left px-4 py-2.5 text-sm text-(--color6) bg-transparent border-none hover:bg-(--bg3) transition-all flex items-center gap-2.5"
+                  >
+                    <EditIcon />
+                    Edit Post
+                  </button>
                   <button
                     onClick={handleToggleVisibility}
                     className="w-full text-left px-4 py-2.5 text-sm text-(--color6) bg-transparent border-none hover:bg-(--bg3) transition-all flex items-center gap-2.5"
@@ -839,6 +851,19 @@ export function FeedPostCard({
         postId={post.id}
         mode={shareModalMode}
       />
+
+      {showEditModal && (
+        <CreatePostModal
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          editPost={{
+            id: post.id,
+            content: post.content,
+            image: post.image,
+            visibility: post.visibility,
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -16,6 +16,9 @@ export const updatePostSchema = z.object({
     content: z.string().min(1).optional(),
     image: z.string().nullable().optional(),
     visibility: z.enum(["PUBLIC", "PRIVATE"]).optional(),
+    removeImage: z
+      .union([z.boolean(), z.literal("true"), z.literal("false")])
+      .optional(),
   }),
 });
 

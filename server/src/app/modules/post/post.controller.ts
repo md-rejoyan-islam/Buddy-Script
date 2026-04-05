@@ -56,7 +56,8 @@ export const postController = {
   update: asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user!.id;
     const postId = req.params.id as string;
-    let imageUrl: string | undefined;
+    const removeImage = req.body.removeImage === "true" || req.body.removeImage === true;
+    let imageUrl: string | null | undefined;
 
     if (req.file) {
       const existingPost = await postService.getById(postId, userId);
@@ -64,10 +65,19 @@ export const postController = {
         await deleteImage(existingPost.image);
       }
       imageUrl = await uploadImage(req.file, "posts");
+    } else if (removeImage) {
+      const existingPost = await postService.getById(postId, userId);
+      if (existingPost?.image) {
+        await deleteImage(existingPost.image);
+      }
+      imageUrl = null;
     }
 
+    // Strip the flag so it doesn't leak into Prisma
+    const { removeImage: _removeImage, ...body } = req.body;
+
     const post = await postService.update(postId, userId, {
-      ...req.body,
+      ...body,
       ...(imageUrl !== undefined && { image: imageUrl }),
     });
 
