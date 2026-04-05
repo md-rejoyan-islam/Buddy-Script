@@ -1,8 +1,8 @@
-import Header from "@/components/feed/header";
-import LeftSidebar from "@/components/feed/left-sidebar";
-import MobileBottomNav from "@/components/feed/mobile-bottom-nav";
-import MobileHeader from "@/components/feed/mobile-header";
-import RightSidebar from "@/components/feed/right-sidebar";
+import Header from "@/components/feed/shared/header";
+import LeftSidebar from "@/components/feed/shared/left-sidebar";
+import MobileBottomNav from "@/components/feed/shared/mobile-bottom-nav";
+import MobileHeader from "@/components/feed/shared/mobile-header";
+import RightSidebar from "@/components/feed/shared/right-sidebar";
 import ThemeToggle from "@/components/theme/theme-toggle";
 
 export default function FeedLayout({

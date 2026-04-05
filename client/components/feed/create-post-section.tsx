@@ -20,7 +20,7 @@ export default function CreatePostSection() {
     <>
       <div className="bg-(--bg2) rounded-md mb-4 overflow-hidden">
         <div className="pt-6 px-6 pb-4">
-          <div className="flex items-start gap-3">
+          <div className="flex items-center gap-3">
             <div className="shrink-0 w-10">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -32,7 +32,7 @@ export default function CreatePostSection() {
             <div className="flex-1 relative">
               <button
                 onClick={() => setShowModal(true)}
-                className="w-full flex items-center bg-transparent border-none cursor-pointer text-left h-15 text-base text-(--color7)"
+                className="flex items-center bg-transparent border-none cursor-pointer text-left  text-base text-(--color7)"
               >
                 <span className="flex-1">Write something ...</span>
                 <EditPenIcon className="shrink-0 ml-2 text-(--color7)" />
@@ -42,14 +42,16 @@ export default function CreatePostSection() {
         </div>
 
         {/* Action buttons - Desktop */}
-        <div className="flex items-center justify-between bg-(--reaction-bg) px-6 m-4 rounded-sm py-3 max-lg:hidden">
+        <div className="flex items-center justify-between bg-[#F3F9FF] px-6 m-4 rounded-sm py-3 max-lg:hidden">
           <div className="flex items-center gap-1">
             <button
               type="button"
               onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 bg-transparent border-none text-sm text-(--color7) py-2 px-3 rounded-md hover:bg-(--bg3) transition-all duration-200 cursor-pointer"
+              className="flex items-center gap-2 bg-transparent border-none text-sm text-(--color7) py-2 px-3 rounded-md hover:text-(--color5) group transition-all duration-200 cursor-pointer"
             >
-              <span className="text-(--color7)"><PhotoIcon /></span>
+              <span className="text-(--color7)">
+                <PhotoIcon className="group-hover:text-(--color5)" />
+              </span>
               Photo
             </button>
             {[
@@ -89,18 +91,20 @@ export default function CreatePostSection() {
               >
                 <PhotoIcon />
               </button>
-              {[<VideoIcon key="v" />, <EventIcon key="e" />, <ArticleIcon key="a" />].map(
-                (icon, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    className="bg-transparent border-none p-1 text-(--color7) opacity-50 cursor-not-allowed"
-                    disabled
-                  >
-                    {icon}
-                  </button>
-                ),
-              )}
+              {[
+                <VideoIcon key="v" />,
+                <EventIcon key="e" />,
+                <ArticleIcon key="a" />,
+              ].map((icon, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  className="bg-transparent border-none p-1 text-(--color7) opacity-50 cursor-not-allowed"
+                  disabled
+                >
+                  {icon}
+                </button>
+              ))}
             </div>
             <button
               type="button"
@@ -114,10 +118,7 @@ export default function CreatePostSection() {
         </div>
       </div>
 
-      <CreatePostModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-      />
+      <CreatePostModal isOpen={showModal} onClose={() => setShowModal(false)} />
     </>
   );
 }

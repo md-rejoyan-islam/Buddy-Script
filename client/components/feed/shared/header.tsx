@@ -65,11 +65,11 @@ export default function Header() {
           </div>
 
           {/* Search */}
-          <div className="ml-auto my-4 text-(--color7)">
+          <div className="ml-auto my-3 text-(--color7)">
             <form className="relative">
               <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2" />
               <input
-                className="bg-(--bg3) border border-(--bg3) rounded-4xl w-106 h-10 py-1.75 px-11.75 transition-all duration-200 hover:border-(--color5) text-base text-(--color6) placeholder:text-base placeholder:text-(--color7) focus:outline-none"
+                className="bg-(--bg3) border border-(--bg3) rounded-4xl w-106 h-10 py-1.75 px-11.75 transition-all duration-200 hover:border-(--color5) text-base text-(--color6) placeholder:text-gray-400/70  focus:outline-none"
                 type="search"
                 placeholder="input search text"
               />
@@ -77,39 +77,48 @@ export default function Header() {
           </div>
 
           {/* Nav Items */}
-          <ul className="flex items-center ml-auto mr-2 text-(--color6)">
+          <ul className="flex items-center ml-auto h-full  mr-2 text-(--color6)">
             {/* Home */}
             <li className="mx-2 block">
               <Link
-                href="/feed"
+                href="/"
                 className="relative block px-4 py-7 before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-full before:h-0.5 before:bg-(--color5) before:rounded-t-md"
               >
                 <HomeIcon className="text-(--color5)" />
               </Link>
             </li>
             {/* Friends */}
-            <li className="mx-2">
-              <Link href="#" className="relative block px-4 py-3">
-                <FriendsIcon />
+            <li className="mx-2 block h-full group relative">
+              <Link href="#" className="relative block px-4 py-6.5 ">
+                <FriendsIcon className="group-hover:text-(--color5)" />
               </Link>
+
+              <div className="absolute left-0 top-full  w-full h-[2.5px] block  bg-(--color5)   rounded-t-md shadow-lg opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity duration-200"></div>
             </li>
             {/* Notifications */}
-            <li className="mx-2">
-              <span className="relative block px-4 py-3 cursor-pointer">
-                <BellIcon />
-                <span className="absolute bg-(--color5) border border-(--bg2) rounded-[9px] min-w-4.25 h-4.25 text-[11px] leading-[1.4] text-center text-white top-1 right-1 p-0.75 flex items-center justify-center">
-                  6
-                </span>
-              </span>
-            </li>
-            {/* Messages */}
-            <li className="mx-2">
-              <Link href="#" className="relative block px-4 py-3">
-                <ChatBubbleIcon />
-                <span className="absolute bg-(--color5) border border-(--bg2) rounded-[9px] min-w-4.25 h-4.25 text-[11px] leading-[1.4] text-center text-white top-1 right-1 p-0.75 flex items-center justify-center">
-                  2
+            <li className="mx-2 block h-full  group relative">
+              <Link href={"#"} className="py-3.5 block">
+                <span className="relative block px-4 py-3 cursor-pointer">
+                  <BellIcon className="group-hover:text-(--color5)" />
+                  <span className="absolute bg-(--color5) border border-(--bg2) rounded-[9px] min-w-4.25 h-4.25 text-[11px] leading-[1.4] text-center text-white top-1 right-1 p-0.75 flex items-center justify-center">
+                    6
+                  </span>
                 </span>
               </Link>
+              <div className="absolute left-0 top-full  w-full h-[2.5px] block  bg-(--color5)   rounded-t-md shadow-lg opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity duration-200"></div>
+            </li>
+            {/* Messages */}
+            <li className="mx-2 block h-full group relative">
+              <Link href={"#"} className="py-3.5 block">
+                <span className="relative block px-4 py-3 cursor-pointer">
+                  <ChatBubbleIcon className="group-hover:text-(--color5)" />
+                  <span className="absolute bg-(--color5) border border-(--bg2) rounded-[9px] min-w-4.25 h-4.25 text-[11px] leading-[1.4] text-center text-white top-1 right-1 p-0.75 flex items-center justify-center">
+                    2
+                  </span>
+                </span>
+              </Link>
+
+              <div className="absolute left-0 top-full  w-full h-[2.5px] block  bg-(--color5)   rounded-t-md shadow-lg opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity duration-200"></div>
             </li>
           </ul>
 
