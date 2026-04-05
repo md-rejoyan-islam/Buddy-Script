@@ -9,6 +9,7 @@ import {
   SendIcon,
   VideoIcon,
 } from "@/lib/svg";
+import Image from "next/image";
 import { useState } from "react";
 import CreatePostModal from "./create-post-modal";
 
@@ -22,17 +23,18 @@ export default function CreatePostSection() {
         <div className="pt-6 px-6 pb-4">
           <div className="flex items-center gap-3">
             <div className="shrink-0 w-10">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={user?.image || "/default-avatar.png"}
+              <Image
+                src={user?.image || "/images/Avatar.png"}
                 alt="Avatar"
+                width={40}
+                height={40}
                 className="w-10 h-10 rounded-full object-cover"
               />
             </div>
             <div className="flex-1 relative">
               <button
                 onClick={() => setShowModal(true)}
-                className="flex items-center bg-transparent border-none cursor-pointer text-left  text-base text-(--color7)"
+                className="w-full flex items-center bg-transparent border-none cursor-pointer text-left  text-base text-(--color7)"
               >
                 <span className="flex-1">Write something ...</span>
                 <EditPenIcon className="shrink-0 ml-2 text-(--color7)" />
@@ -42,7 +44,7 @@ export default function CreatePostSection() {
         </div>
 
         {/* Action buttons - Desktop */}
-        <div className="flex items-center justify-between bg-[#F3F9FF] px-6 m-4 rounded-sm py-3 max-lg:hidden">
+        <div className="flex items-center justify-between bg-[#F3F9FF] dark:bg-(--reaction-bg) px-6 m-4 rounded-sm py-3 max-lg:hidden">
           <div className="flex items-center gap-1">
             <button
               type="button"

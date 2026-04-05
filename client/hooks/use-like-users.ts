@@ -1,7 +1,7 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { clientFetch } from "@/lib/client-api";
+import { useQuery } from "@tanstack/react-query";
 
 export type LikeUser = {
   id: string;

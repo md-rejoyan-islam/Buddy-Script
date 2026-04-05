@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 type AvatarUser = {
   id: string;
   src: string | null;
@@ -33,11 +35,12 @@ export function AvatarGroup({
           style={{ zIndex: i }}
           className="inline-flex shrink-0 items-center justify-center border-2 border-white rounded-full h-8 ring-offset-1 w-8 -mr-4 overflow-hidden bg-gray-200"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={user.src || "/default-avatar.png"}
+          <Image
+            src={user.src || "/images/Avatar.png"}
             alt={user.alt?.split("")[0].toLocaleUpperCase() || ""}
             className="w-full h-full object-cover"
+            width={32}
+            height={32}
           />
         </span>
       ))}

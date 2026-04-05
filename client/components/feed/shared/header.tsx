@@ -17,6 +17,36 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+export const DesktopMenuItem = ({
+  link,
+  icon,
+  label,
+  isActive = false,
+}: {
+  link: string;
+  icon: React.ReactNode;
+  label: string;
+  isActive?: boolean;
+}) => {
+  return (
+    <li className="mx-2 block h-full  group relative">
+      <Link href={link} className="py-3.5 block">
+        <span className="relative block px-4 py-3 cursor-pointer">
+          {icon}
+          {label && (
+            <span className="absolute bg-(--color5) border border-(--bg2) rounded-[9px] min-w-4.25 h-4.25 text-[11px] leading-[1.4] text-center text-white top-1 right-1 p-0.75 flex items-center justify-center">
+              {label}
+            </span>
+          )}
+        </span>
+      </Link>
+      <div
+        className={`absolute left-0 top-full  w-full h-[2.5px] block  bg-(--color5)   rounded-t-md shadow-lg ${isActive ? "opacity-100" : "opacity-0 group-hover:visible invisible"} group-hover:opacity-100   transition-opacity duration-200`}
+      ></div>
+    </li>
+  );
+};
+
 export default function Header() {
   const { data: user } = useCurrentUser();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -79,47 +109,31 @@ export default function Header() {
           {/* Nav Items */}
           <ul className="flex items-center ml-auto h-full  mr-2 text-(--color6)">
             {/* Home */}
-            <li className="mx-2 block">
-              <Link
-                href="/"
-                className="relative block px-4 py-7 before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-full before:h-0.5 before:bg-(--color5) before:rounded-t-md"
-              >
-                <HomeIcon className="text-(--color5)" />
-              </Link>
-            </li>
+
+            <DesktopMenuItem
+              link="/"
+              icon={<HomeIcon className="text-(--color5)" />}
+              label=""
+              isActive={true}
+            />
             {/* Friends */}
-            <li className="mx-2 block h-full group relative">
-              <Link href="#" className="relative block px-4 py-6.5 ">
-                <FriendsIcon className="group-hover:text-(--color5)" />
-              </Link>
-
-              <div className="absolute left-0 top-full  w-full h-[2.5px] block  bg-(--color5)   rounded-t-md shadow-lg opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity duration-200"></div>
-            </li>
+            <DesktopMenuItem
+              link="#"
+              icon={<FriendsIcon className="group-hover:text-(--color5)" />}
+              label=""
+            />
             {/* Notifications */}
-            <li className="mx-2 block h-full  group relative">
-              <Link href={"#"} className="py-3.5 block">
-                <span className="relative block px-4 py-3 cursor-pointer">
-                  <BellIcon className="group-hover:text-(--color5)" />
-                  <span className="absolute bg-(--color5) border border-(--bg2) rounded-[9px] min-w-4.25 h-4.25 text-[11px] leading-[1.4] text-center text-white top-1 right-1 p-0.75 flex items-center justify-center">
-                    6
-                  </span>
-                </span>
-              </Link>
-              <div className="absolute left-0 top-full  w-full h-[2.5px] block  bg-(--color5)   rounded-t-md shadow-lg opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity duration-200"></div>
-            </li>
+            <DesktopMenuItem
+              link="#"
+              icon={<BellIcon className="group-hover:text-(--color5)" />}
+              label="6"
+            />
             {/* Messages */}
-            <li className="mx-2 block h-full group relative">
-              <Link href={"#"} className="py-3.5 block">
-                <span className="relative block px-4 py-3 cursor-pointer">
-                  <ChatBubbleIcon className="group-hover:text-(--color5)" />
-                  <span className="absolute bg-(--color5) border border-(--bg2) rounded-[9px] min-w-4.25 h-4.25 text-[11px] leading-[1.4] text-center text-white top-1 right-1 p-0.75 flex items-center justify-center">
-                    2
-                  </span>
-                </span>
-              </Link>
-
-              <div className="absolute left-0 top-full  w-full h-[2.5px] block  bg-(--color5)   rounded-t-md shadow-lg opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity duration-200"></div>
-            </li>
+            <DesktopMenuItem
+              link="#"
+              icon={<ChatBubbleIcon className="group-hover:text-(--color5)" />}
+              label="2"
+            />
           </ul>
 
           {/* Profile dropdown */}
@@ -129,10 +143,11 @@ export default function Header() {
               className="flex items-center cursor-pointer border-none bg-transparent"
             >
               <div className="mr-2 w-6 h-6 shrink-0 overflow-hidden rounded-full">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={userImage}
                   alt="Profile"
+                  width={24}
+                  height={24}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -151,17 +166,20 @@ export default function Header() {
                 {/* User info */}
                 <div className="p-4 border-b border-(--bcolor1)">
                   <div className="flex items-center gap-3">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                       src={userImage}
                       alt="Profile"
+                      width={40}
+                      height={40}
                       className="w-10 h-10 rounded-full object-cover"
                     />
                     <div>
                       <p className="text-sm font-medium text-(--color6)">
                         {userName}
                       </p>
-                      <p className="text-xs text-(--color7)">{user?.email}</p>
+                      <p className="text-[10px] text-(--color7)">
+                        {user?.email}
+                      </p>
                     </div>
                   </div>
                 </div>

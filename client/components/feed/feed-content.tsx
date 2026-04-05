@@ -88,7 +88,7 @@ function StoryCard({
 }) {
   return (
     <div className="w-1/4 px-1.5">
-      <div className="rounded-md relative overflow-hidden">
+      <div className="rounded-md relative overflow-hidden group cursor-pointer">
         <div className="relative">
           <Image
             src={img}
@@ -97,6 +97,8 @@ function StoryCard({
             height={200}
             className="w-full h-auto rounded-md"
           />
+          {/* Shared dark overlay — darker by default, lighter on hover */}
+          <div className="absolute inset-0 bg-black/40 group-hover:bg-black/60 transition-colors duration-200 pointer-events-none" />
           {isYourStory ? (
             <>
               <div className="absolute rounded-t-2xl bottom-0 left-0 right-0 h-12 bg-(--bg5) flex items-end justify-center pb-2">
@@ -122,8 +124,11 @@ function StoryCard({
             </>
           ) : (
             <>
-              <div className="absolute bottom-0 left-0 right-0 p-2 bg-linear-to-t from-black/60 to-transparent">
-                <p className="text-white text-xs font-medium">{name}</p>
+              {/* Centered name */}
+              <div className="absolute bottom-2 inset-x-0 flex items-center justify-center px-2">
+                <p className="text-white text-sm  font-semibold text-center drop-shadow-lg">
+                  {name}
+                </p>
               </div>
               <div className="absolute top-2 right-2">
                 <Image
@@ -131,7 +136,7 @@ function StoryCard({
                   alt="Image"
                   width={24}
                   height={24}
-                  className="w-6 h-6 rounded-full border-2 border-(--color5)"
+                  className="w-6 h-6 rounded-full border-2 border-white"
                 />
               </div>
             </>

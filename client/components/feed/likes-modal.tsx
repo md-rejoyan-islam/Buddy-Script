@@ -2,6 +2,7 @@
 
 import Modal from "@/components/ui/modal";
 import { useLikeUsers } from "@/hooks/use-like-users";
+import Image from "next/image";
 import { useState } from "react";
 
 const REACTIONS: Record<string, string> = {
@@ -77,8 +78,9 @@ export default function LikesModal({ isOpen, onClose, type, id }: Props) {
           >
             <div className="flex items-center gap-3">
               <div className="relative">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
+                  width={40}
+                  height={40}
                   src={like.user.image || "/images/post_img.png"}
                   alt={`${like.user.firstName} ${like.user.lastName}`}
                   className="w-10 h-10 rounded-full object-cover"

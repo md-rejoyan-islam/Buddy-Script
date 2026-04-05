@@ -35,6 +35,7 @@ import {
   TrashIcon,
 } from "@/lib/svg";
 import { formatDistanceToNow } from "@/lib/utils";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import LikesModal from "./likes-modal";
@@ -73,7 +74,7 @@ function ReplyItem({
   const menuRef = useRef<HTMLDivElement>(null);
   const isOwner = currentUserId === reply.author.id;
   const authorName = `${reply.author.firstName} ${reply.author.lastName}`;
-  const authorImage = reply.author.image || "/default-avatar.png";
+  const authorImage = reply.author.image || "/images/Avatar.png";
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -103,10 +104,11 @@ function ReplyItem({
   return (
     <div className="flex gap-2.5 mb-3">
       <div className="shrink-0">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={authorImage}
           alt={authorName}
+          width={32}
+          height={32}
           className="w-7 h-7 rounded-full object-cover"
         />
       </div>
@@ -256,7 +258,7 @@ function CommentItem({
   const isOwner = currentUserId === comment.author.id;
 
   const authorName = `${comment.author.firstName} ${comment.author.lastName}`;
-  const authorImage = comment.author.image || "/default-avatar.png";
+  const authorImage = comment.author.image || "/images/Avatar.png";
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -294,10 +296,11 @@ function CommentItem({
   return (
     <div className="flex gap-3 mb-4 group/comment">
       <div className="shrink-0">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={authorImage}
           alt={authorName}
+          width={32}
+          height={32}
           className="w-8 h-8 rounded-full object-cover"
         />
       </div>
@@ -465,10 +468,11 @@ function CommentItem({
           <form onSubmit={handleReplySubmit} className="mt-2">
             <div className="bg-(--comment-bg) rounded-[18px] py-1 px-2.5">
               <div className="flex items-center">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src="/images/txt_img.png"
                   alt="You"
+                  width={24}
+                  height={24}
                   className="w-5 h-5 rounded-full object-cover shrink-0"
                 />
                 <input
@@ -516,10 +520,11 @@ function CommentSection({ postId }: { postId: string }) {
       <form onSubmit={handleSubmit} className="mb-4">
         <div className="bg-(--comment-bg) rounded-[18px] py-1 px-2.5">
           <div className="flex items-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={currentUser?.image || "/default-avatar.png"}
+            <Image
+              src={currentUser?.image || "/images/Avatar.png"}
               alt="You"
+              width={24}
+              height={24}
               className="w-6.5 h-6.5 rounded-full object-cover shrink-0"
             />
             <input
@@ -636,10 +641,11 @@ export function FeedPostCard({
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
             <div className="mr-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={authorImage}
                 alt={authorName}
+                width={32}
+                height={32}
                 className="w-11 h-11 rounded-full object-cover"
               />
             </div>
@@ -704,10 +710,11 @@ export function FeedPostCard({
 
         {post.image && (
           <div className="mb-6">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={post.image}
               alt="Post"
+              width={600}
+              height={400}
               className="w-full h-auto rounded-md object-cover"
             />
           </div>
@@ -836,6 +843,36 @@ export function FeedPostCard({
   );
 }
 
+/* ─── Post Card Skeleton ────────────────────────── */
+
+function PostCardSkeleton() {
+  return (
+    <div className="bg-(--bg2) rounded-md pb-6 pt-6 mb-4 animate-pulse">
+      <div className="px-6">
+        {/* Header: avatar + name */}
+        <div className="flex items-center mb-4">
+          <div className="w-11 h-11 rounded-full bg-(--bg3) mr-3" />
+          <div className="flex-1">
+            <div className="h-3 w-32 bg-(--bg3) rounded mb-2" />
+            <div className="h-2.5 w-20 bg-(--bg3) rounded" />
+          </div>
+        </div>
+        {/* Content lines */}
+        <div className="h-3 w-full bg-(--bg3) rounded mb-2" />
+        <div className="h-3 w-4/5 bg-(--bg3) rounded mb-4" />
+        {/* Image placeholder */}
+        <div className="w-full h-60 bg-(--bg3) rounded-md mb-4" />
+      </div>
+      {/* Reaction buttons row */}
+      <div className="flex items-center bg-(--reaction-bg) rounded-md p-2 mx-6 gap-2">
+        <div className="flex-1 h-11 bg-(--bg3) rounded-md" />
+        <div className="flex-1 h-11 bg-(--bg3) rounded-md" />
+        <div className="flex-1 h-11 bg-(--bg3) rounded-md" />
+      </div>
+    </div>
+  );
+}
+
 /* ─── Feed Posts List ───────────────────────────── */
 
 export default function FeedPosts() {
@@ -866,9 +903,11 @@ export default function FeedPosts() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-8">
-        <div className="w-8 h-8 border-2 border-(--color5) border-t-transparent rounded-full animate-spin" />
-      </div>
+      <>
+        {Array.from({ length: 3 }).map((_, i) => (
+          <PostCardSkeleton key={i} />
+        ))}
+      </>
     );
   }
 

@@ -1,7 +1,7 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { clientFetch } from "@/lib/client-api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export type Reply = {
   id: string;
@@ -71,7 +71,13 @@ export function useLikeComment(postId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ commentId, reaction = "like" }: { commentId: string; reaction?: string }) => {
+    mutationFn: async ({
+      commentId,
+      reaction = "like",
+    }: {
+      commentId: string;
+      reaction?: string;
+    }) => {
       const res = await clientFetch(`/likes/comment/${commentId}`, {
         method: "POST",
         body: { reaction },
@@ -81,7 +87,10 @@ export function useLikeComment(postId: string) {
     },
     onMutate: async ({ commentId, reaction = "like" }) => {
       await queryClient.cancelQueries({ queryKey: ["comments", postId] });
-      const previous = queryClient.getQueryData<Comment[]>(["comments", postId]);
+      const previous = queryClient.getQueryData<Comment[]>([
+        "comments",
+        postId,
+      ]);
 
       queryClient.setQueryData<Comment[]>(["comments", postId], (old) =>
         old?.map((c) => {
@@ -93,7 +102,11 @@ export function useLikeComment(postId: string) {
             likes: sameReaction ? [] : [{ id: "optimistic", reaction }],
             _count: {
               ...c._count,
-              likes: sameReaction ? c._count.likes - 1 : (isLiked ? c._count.likes : c._count.likes + 1),
+              likes: sameReaction
+                ? c._count.likes - 1
+                : isLiked
+                  ? c._count.likes
+                  : c._count.likes + 1,
             },
           };
         }),
@@ -117,7 +130,9 @@ export function useDeleteComment(postId: string) {
 
   return useMutation({
     mutationFn: async (commentId: string) => {
-      const res = await clientFetch(`/comments/${commentId}`, { method: "DELETE" });
+      const res = await clientFetch(`/comments/${commentId}`, {
+        method: "DELETE",
+      });
       if (!res.success) throw new Error(res.message);
       return res.data;
     },
@@ -132,7 +147,13 @@ export function useUpdateComment(postId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ commentId, content }: { commentId: string; content: string }) => {
+    mutationFn: async ({
+      commentId,
+      content,
+    }: {
+      commentId: string;
+      content: string;
+    }) => {
       const res = await clientFetch(`/comments/${commentId}`, {
         method: "PATCH",
         body: { content },
@@ -150,9 +171,7 @@ export function useReplies(commentId: string, enabled: boolean) {
   return useQuery({
     queryKey: ["replies", commentId],
     queryFn: async () => {
-      const res = await clientFetch<Reply[]>(
-        `/replies/comment/${commentId}`,
-      );
+      const res = await clientFetch<Reply[]>(`/replies/comment/${commentId}`);
       if (!res.success || !res.data) {
         throw new Error(res.message || "Failed to fetch replies");
       }
@@ -186,7 +205,9 @@ export function useDeleteReply(commentId: string, postId: string) {
 
   return useMutation({
     mutationFn: async (replyId: string) => {
-      const res = await clientFetch(`/replies/${replyId}`, { method: "DELETE" });
+      const res = await clientFetch(`/replies/${replyId}`, {
+        method: "DELETE",
+      });
       if (!res.success) throw new Error(res.message);
       return res.data;
     },
@@ -201,7 +222,13 @@ export function useUpdateReply(commentId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ replyId, content }: { replyId: string; content: string }) => {
+    mutationFn: async ({
+      replyId,
+      content,
+    }: {
+      replyId: string;
+      content: string;
+    }) => {
       const res = await clientFetch(`/replies/${replyId}`, {
         method: "PATCH",
         body: { content },
@@ -219,7 +246,13 @@ export function useLikeReply(commentId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ replyId, reaction = "like" }: { replyId: string; reaction?: string }) => {
+    mutationFn: async ({
+      replyId,
+      reaction = "like",
+    }: {
+      replyId: string;
+      reaction?: string;
+    }) => {
       const res = await clientFetch(`/likes/reply/${replyId}`, {
         method: "POST",
         body: { reaction },
@@ -229,7 +262,10 @@ export function useLikeReply(commentId: string) {
     },
     onMutate: async ({ replyId, reaction = "like" }) => {
       await queryClient.cancelQueries({ queryKey: ["replies", commentId] });
-      const previous = queryClient.getQueryData<Reply[]>(["replies", commentId]);
+      const previous = queryClient.getQueryData<Reply[]>([
+        "replies",
+        commentId,
+      ]);
 
       queryClient.setQueryData<Reply[]>(["replies", commentId], (old) =>
         old?.map((r) => {
@@ -241,7 +277,11 @@ export function useLikeReply(commentId: string) {
             likes: sameReaction ? [] : [{ id: "optimistic", reaction }],
             _count: {
               ...r._count,
-              likes: sameReaction ? r._count.likes - 1 : (isLiked ? r._count.likes : r._count.likes + 1),
+              likes: sameReaction
+                ? r._count.likes - 1
+                : isLiked
+                  ? r._count.likes
+                  : r._count.likes + 1,
             },
           };
         }),

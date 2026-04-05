@@ -1,7 +1,7 @@
 "use client";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { clientFetch } from "@/lib/client-api";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 export type PostAuthor = {
   id: string;
@@ -24,7 +24,12 @@ export type Post = {
     shares: number;
   };
   likes: { id: string; reaction: string }[];
-  recentLikers: { id: string; firstName: string; lastName: string; image: string | null }[];
+  recentLikers: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    image: string | null;
+  }[];
 };
 
 type FeedResponse = {

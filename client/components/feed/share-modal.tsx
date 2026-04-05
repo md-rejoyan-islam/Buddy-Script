@@ -1,7 +1,8 @@
 "use client";
 
 import Modal from "@/components/ui/modal";
-import { useShareUsers, useSharePost } from "@/hooks/use-share";
+import { useSharePost, useShareUsers } from "@/hooks/use-share";
+import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -22,8 +23,8 @@ export default function ShareModal({ isOpen, onClose, postId, mode }: Props) {
 
   const postLink =
     typeof window !== "undefined"
-      ? `${window.location.origin}/${postId}`
-      : `/${postId}`;
+      ? `${window.location.origin}/feed/${postId}`
+      : `/feed/${postId}`;
 
   const handleCopy = async () => {
     try {
@@ -81,9 +82,10 @@ export default function ShareModal({ isOpen, onClose, postId, mode }: Props) {
             <div className="flex flex-col gap-3">
               {shareUsers.map((share) => (
                 <div key={share.id} className="flex items-center gap-3">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={share.user.image || "/default-avatar.png"}
+                  <Image
+                    width={40}
+                    height={40}
+                    src={share.user.image || "/images/Avatar.png"}
                     alt={`${share.user.firstName} ${share.user.lastName}`}
                     className="w-10 h-10 rounded-full object-cover"
                   />

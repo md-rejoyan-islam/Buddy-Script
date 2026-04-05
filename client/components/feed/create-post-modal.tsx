@@ -79,9 +79,7 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
       toast.success("Post created successfully!");
       handleClose();
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to create post",
-      );
+      toast.error(err instanceof Error ? err.message : "Failed to create post");
     }
   };
 
@@ -142,10 +140,11 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
     >
       {/* User info + visibility */}
       <div className="flex items-center gap-3 px-4 pt-4 pb-2 shrink-0">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={user?.image || "/default-avatar.png"}
+        <Image
+          src={user?.image || "/images/Avatar.png"}
           alt="Avatar"
+          width={40}
+          height={40}
           className="w-10 h-10 rounded-full object-cover"
         />
         <div>

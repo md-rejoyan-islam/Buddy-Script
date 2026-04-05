@@ -1,14 +1,20 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { clientFetch } from "@/lib/client-api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Post } from "./use-feed";
 
 export function useLikePost() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ postId, reaction = "like" }: { postId: string; reaction?: string }) => {
+    mutationFn: async ({
+      postId,
+      reaction = "like",
+    }: {
+      postId: string;
+      reaction?: string;
+    }) => {
       const res = await clientFetch(`/likes/post/${postId}`, {
         method: "POST",
         body: { reaction },
@@ -33,13 +39,18 @@ export function useLikePost() {
             posts: page.posts.map((post) => {
               if (post.id !== postId) return post;
               const isLiked = post.likes.length > 0;
-              const sameReaction = isLiked && post.likes[0]?.reaction === reaction;
+              const sameReaction =
+                isLiked && post.likes[0]?.reaction === reaction;
               return {
                 ...post,
                 likes: sameReaction ? [] : [{ id: "optimistic", reaction }],
                 _count: {
                   ...post._count,
-                  likes: sameReaction ? post._count.likes - 1 : (isLiked ? post._count.likes : post._count.likes + 1),
+                  likes: sameReaction
+                    ? post._count.likes - 1
+                    : isLiked
+                      ? post._count.likes
+                      : post._count.likes + 1,
                 },
               };
             }),

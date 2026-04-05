@@ -1,8 +1,8 @@
+import PostDetail from "@/components/feed/single-post/post-detail";
 import type { Post } from "@/hooks/use-feed";
 import { apiProxy } from "@/lib/api";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import PostDetail from "./post-detail";
 
 async function getPost(id: string): Promise<Post | null> {
   const res = await apiProxy<Post>(`/api/v1/posts/${id}`);
