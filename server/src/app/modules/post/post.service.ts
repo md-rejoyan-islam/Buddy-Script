@@ -31,7 +31,10 @@ export const postService = {
     { cursor, limit = 10 }: { cursor?: string; limit?: number },
   ) {
     const cacheKey = `feed:${currentUserId}:${cursor || "first"}:${limit}`;
-    const cached = await cache.get<{ data: unknown[]; nextCursor: string | null }>(cacheKey);
+    const cached = await cache.get<{
+      data: unknown[];
+      nextCursor: string | null;
+    }>(cacheKey);
     if (cached) return cached;
 
     const posts = await prisma.post.findMany({

@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(morganMiddleware);
 
 app.get("/", (req: Request, res: Response) => {
-  res.json({ message: "Welcome to Appify API" });
+  res.json({ message: "Welcome to Buddy Script API" });
 });
 
 app.use("/api/v1", routes);

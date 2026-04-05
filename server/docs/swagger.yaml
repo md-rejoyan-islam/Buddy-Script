@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Appify API
+  title: Buddy-Script API
   description: Social media feed application API
   version: 1.0.0
 

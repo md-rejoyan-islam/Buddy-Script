@@ -60,14 +60,6 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: 8,
     maxPasswordLength: 128,
-    // requireEmailVerification: true,
-    // async sendResetPassword(data, request) {
-    //   await mailTemplate({
-    //     to: data.user.email,
-    //     subject: "Reset Password  ",
-    //     body: forgotPasswordMail(data.url),
-    //   });
-    // },
   },
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days

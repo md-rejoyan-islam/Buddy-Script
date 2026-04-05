@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const createCommentSchema = z.object({
   params: z.object({
@@ -30,5 +30,5 @@ export const commentsByPostSchema = z.object({
   }),
 });
 
-export type CreateCommentInput = z.infer<typeof createCommentSchema>['body'];
-export type UpdateCommentInput = z.infer<typeof updateCommentSchema>['body'];
+export type CreateCommentInput = z.infer<typeof createCommentSchema>["body"];
+export type UpdateCommentInput = z.infer<typeof updateCommentSchema>["body"];
