@@ -12,7 +12,10 @@ export default function FeedLayout({
 }>) {
   return (
     <div className="h-screen flex flex-col max-lg:h-full">
-      <div className="w-full h-screen bg-(--bcolor1) overflow-hidden max-lg:h-full">
+      <div
+        className="w-full h-screen bg-(--bcolor1) overflow-hidden max-lg:h-full"
+        suppressHydrationWarning
+      >
         <ThemeToggle />
         <Header />
         <MobileHeader />
