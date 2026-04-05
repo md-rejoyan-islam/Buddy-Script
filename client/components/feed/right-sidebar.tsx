@@ -1,3 +1,4 @@
+import { OnlineDotIcon, SearchIcon } from "@/lib/svg";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -129,17 +130,7 @@ export default function RightSidebar() {
           </div>
           {/* Search */}
           <form className="relative mb-4">
-            <svg
-              className="absolute left-3 top-1/2 -translate-y-1/2"
-              xmlns="http://www.w3.org/2000/svg"
-              width="17"
-              height="17"
-              fill="none"
-              viewBox="0 0 17 17"
-            >
-              <circle cx="7" cy="7" r="6" stroke="#666" />
-              <path stroke="#666" strokeLinecap="round" d="M16 16l-3-3" />
-            </svg>
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-(--color7)" />
             <input
               className="bg-(--bg3) border border-(--bg3) rounded-4xl w-full h-10 py-1.75 px-10 transition-all duration-200 hover:border-(--color5) text-sm placeholder:text-sm placeholder:text-(--color7) focus:outline-none"
               type="search"
@@ -178,24 +169,7 @@ export default function RightSidebar() {
               </div>
               <div className="shrink-0 ml-2">
                 {friend.online ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="14"
-                    height="14"
-                    fill="none"
-                    viewBox="0 0 14 14"
-                  >
-                    <rect
-                      width="12"
-                      height="12"
-                      x="1"
-                      y="1"
-                      fill="#0ACF83"
-                      stroke="#fff"
-                      strokeWidth="2"
-                      rx="6"
-                    />
-                  </svg>
+                  <OnlineDotIcon />
                 ) : (
                   <span className="text-xs text-(--color7)">
                     {friend.lastSeen}
