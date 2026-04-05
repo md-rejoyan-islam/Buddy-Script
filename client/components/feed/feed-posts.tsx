@@ -715,7 +715,6 @@ export function FeedPostCard({
               alt="Post"
               width={600}
               height={400}
-              unoptimized
               className="w-full h-auto rounded-md object-cover"
             />
           </div>
