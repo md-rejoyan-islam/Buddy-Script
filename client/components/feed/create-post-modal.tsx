@@ -1,9 +1,17 @@
 "use client";
 
-import Image from "next/image";
-import { useState, useRef, useEffect } from "react";
-import { useCreatePost } from "@/hooks/use-post-mutations";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCreatePost } from "@/hooks/use-post-mutations";
+import {
+  ChevronDownIcon,
+  CloseIcon,
+  PhotoIcon,
+  PrivateLockIcon,
+  PublicGlobeIcon,
+  VideoIcon,
+} from "@/lib/svg";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 type Props = {
@@ -96,14 +104,7 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
             onClick={handleClose}
             className="w-8 h-8 rounded-full bg-(--bg3) flex items-center justify-center border-none text-(--color7) hover:bg-(--bg4) transition-all"
           >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path
-                d="M13 1L1 13M1 1l12 12"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
+            <CloseIcon />
           </button>
           <h3 className="text-lg font-semibold text-(--color6)">Create Post</h3>
           <button
@@ -136,21 +137,9 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
                 onClick={() => setShowVisibilityMenu(!showVisibilityMenu)}
                 className="flex items-center gap-1 mt-0.5 px-2 py-0.5 rounded-full border border-(--bcolor1) bg-transparent text-xs font-medium text-(--color5) cursor-pointer hover:bg-(--bg3) transition-all"
               >
-                {visibility === "PUBLIC" ? (
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                  </svg>
-                ) : (
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                  </svg>
-                )}
+                {visibility === "PUBLIC" ? <PublicGlobeIcon size={12} /> : <PrivateLockIcon size={12} />}
                 {visibility === "PUBLIC" ? "Public" : "Private"}
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
+                <ChevronDownIcon />
               </button>
               {showVisibilityMenu && (
                 <div className="absolute top-full left-0 mt-1 bg-(--bg2) border border-(--bcolor1) rounded-md shadow-lg z-10 overflow-hidden">
@@ -160,10 +149,7 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
                       visibility === "PUBLIC" ? "bg-(--color9) text-(--color5)" : "bg-transparent text-(--color6) hover:bg-(--bg3)"
                     }`}
                   >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <circle cx="12" cy="12" r="10" />
-                      <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                    </svg>
+                    <PublicGlobeIcon />
                     Public
                   </button>
                   <button
@@ -172,10 +158,7 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
                       visibility === "PRIVATE" ? "bg-(--color9) text-(--color5)" : "bg-transparent text-(--color6) hover:bg-(--bg3)"
                     }`}
                   >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                    </svg>
+                    <PrivateLockIcon />
                     Private
                   </button>
                 </div>
@@ -231,9 +214,7 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
             className="flex items-center justify-center w-9 h-9 rounded-full bg-transparent border-none text-(--color7) hover:bg-(--bg3) transition-all cursor-pointer"
             title="Add photo"
           >
-            <svg width="20" height="20" fill="none" viewBox="0 0 20 20">
-              <path fill="currentColor" d="M13.916 0c3.109 0 5.18 2.429 5.18 5.914v8.17c0 3.486-2.072 5.916-5.18 5.916H5.999C2.89 20 .827 17.572.827 14.085v-8.17C.827 2.43 2.897 0 6 0h7.917zm0 1.504H5.999c-2.321 0-3.799 1.735-3.799 4.41v8.17c0 2.68 1.472 4.412 3.799 4.412h7.917c2.328 0 3.807-1.734 3.807-4.411v-8.17c0-2.678-1.478-4.411-3.807-4.411zm.65 8.68l.12.125 1.9 2.147a.803.803 0 01-.016 1.063.642.642 0 01-.894.058l-.076-.074-1.9-2.148a.806.806 0 00-1.205-.028l-.074.087-2.04 2.717c-.722.963-2.02 1.066-2.86.26l-.111-.116-.814-.91a.562.562 0 00-.793-.07l-.075.073-1.4 1.617a.645.645 0 01-.97.029.805.805 0 01-.09-.977l.064-.086 1.4-1.617c.736-.852 1.95-.897 2.734-.137l.114.12.81.905a.587.587 0 00.861.033l.07-.078 2.04-2.718c.81-1.08 2.27-1.19 3.205-.275zM6.831 4.64c1.265 0 2.292 1.125 2.292 2.51 0 1.386-1.027 2.511-2.292 2.511S4.54 8.537 4.54 7.152c0-1.386 1.026-2.51 2.291-2.51zm0 1.504c-.507 0-.918.451-.918 1.007 0 .555.411 1.006.918 1.006.507 0 .919-.451.919-1.006 0-.556-.412-1.007-.919-1.007z" />
-            </svg>
+            <PhotoIcon />
           </button>
           <button
             type="button"
@@ -241,9 +222,7 @@ export default function CreatePostModal({ isOpen, onClose }: Props) {
             disabled
             title="Add video"
           >
-            <svg width="20" height="20" fill="none" viewBox="0 0 22 24">
-              <path fill="currentColor" d="M11.485 4.5c2.213 0 3.753 1.534 3.917 3.784l2.418-1.082c1.047-.468 2.188.327 2.271 1.533l.005.141v6.64c0 1.237-1.103 2.093-2.155 1.72l-.121-.047-2.418-1.083c-.164 2.25-1.708 3.785-3.917 3.785H5.76c-2.343 0-3.932-1.72-3.932-4.188V8.688c0-2.47 1.589-4.188 3.932-4.188h5.726zm0 1.5H5.76C4.169 6 3.197 7.05 3.197 8.688v7.015c0 1.636.972 2.688 2.562 2.688h5.726c1.586 0 2.562-1.054 2.562-2.688v-.686-6.329c0-1.636-.973-2.688-2.562-2.688zM18.4 8.57l-.062.02-2.921 1.306v4.596l2.921 1.307c.165.073.343-.036.38-.215l.008-.07V8.876c0-.195-.16-.334-.326-.305z" />
-            </svg>
+            <VideoIcon size={20} />
           </button>
         </div>
       </div>

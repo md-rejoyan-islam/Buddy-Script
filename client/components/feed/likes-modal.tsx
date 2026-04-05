@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { useLikeUsers } from "@/hooks/use-like-users";
+import { CloseIcon } from "@/lib/svg";
+import { useState } from "react";
 
 const REACTIONS: Record<string, string> = {
   like: "👍",
@@ -48,9 +49,7 @@ export default function LikesModal({ isOpen, onClose, type, id }: Props) {
             onClick={onClose}
             className="w-8 h-8 rounded-full bg-(--bg3) flex items-center justify-center border-none text-(--color7) hover:bg-(--bg4) transition-all"
           >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M13 1L1 13M1 1l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
+            <CloseIcon />
           </button>
         </div>
 

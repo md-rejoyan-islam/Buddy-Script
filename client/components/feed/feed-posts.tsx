@@ -22,6 +22,18 @@ import {
   useLikePost,
   useUpdateVisibility,
 } from "@/hooks/use-post-mutations";
+import {
+  CommentIcon,
+  EditIcon,
+  PrivateLockIcon,
+  PublicGlobeIcon,
+  SendIcon,
+  ShareIcon,
+  ThreeDotMenuIcon,
+  ThreeDotMenuVerticalIcon,
+  ThumbsUpIcon,
+  TrashIcon,
+} from "@/lib/svg";
 import { formatDistanceToNow } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -145,16 +157,7 @@ function ReplyItem({
                 onClick={() => setShowMenu(!showMenu)}
                 className="w-6 h-6 flex items-center justify-center rounded-full bg-transparent border-none text-(--color7) hover:bg-(--bg3) cursor-pointer"
               >
-                <svg
-                  width="12"
-                  height="4"
-                  viewBox="0 0 14 4"
-                  fill="currentColor"
-                >
-                  <circle cx="2" cy="2" r="1.5" />
-                  <circle cx="7" cy="2" r="1.5" />
-                  <circle cx="12" cy="2" r="1.5" />
-                </svg>
+                <ThreeDotMenuIcon width={12} height={4} />
               </button>
               {showMenu && (
                 <div className="absolute right-0 top-full mt-1 bg-(--bg2) border border-(--bcolor1) rounded-lg shadow-lg py-1 w-28 z-50">
@@ -347,16 +350,7 @@ function CommentItem({
                 onClick={() => setShowMenu(!showMenu)}
                 className="w-7 h-7 flex items-center justify-center rounded-full bg-transparent border-none text-(--color7) hover:bg-(--bg3) cursor-pointer"
               >
-                <svg
-                  width="14"
-                  height="4"
-                  viewBox="0 0 14 4"
-                  fill="currentColor"
-                >
-                  <circle cx="2" cy="2" r="1.5" />
-                  <circle cx="7" cy="2" r="1.5" />
-                  <circle cx="12" cy="2" r="1.5" />
-                </svg>
+                <ThreeDotMenuIcon />
               </button>
               {showMenu && (
                 <div className="absolute right-0 top-full mt-1 bg-(--bg2) border border-(--bcolor1) rounded-lg shadow-lg py-1 w-32 z-50">
@@ -367,37 +361,14 @@ function CommentItem({
                     }}
                     className="w-full text-left px-3 py-2 text-sm text-(--color6) bg-transparent border-none hover:bg-(--bg3) cursor-pointer flex items-center gap-2"
                   >
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                    </svg>
+                    <EditIcon />
                     Edit
                   </button>
                   <button
                     onClick={handleDelete}
                     className="w-full text-left px-3 py-2 text-sm text-red-500 bg-transparent border-none hover:bg-(--bg3) cursor-pointer flex items-center gap-2"
                   >
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                    </svg>
+                    <TrashIcon />
                     Delete
                   </button>
                 </div>
@@ -513,14 +484,7 @@ function CommentItem({
                   disabled={createReply.isPending || !replyText.trim()}
                   className="shrink-0 border-none bg-transparent text-(--color5) disabled:opacity-40"
                 >
-                  <svg width="14" height="14" fill="none" viewBox="0 0 14 13">
-                    <path
-                      fill="currentColor"
-                      fillRule="evenodd"
-                      d="M6.37 7.879l2.438 3.955a.335.335 0 00.34.162c.068-.01.23-.05.289-.247l3.049-10.297a.348.348 0 00-.09-.35.341.341 0 00-.34-.088L1.75 4.03a.34.34 0 00-.247.289.343.343 0 00.16.347L5.666 7.17 9.2 3.597a.5.5 0 01.712.703L6.37 7.88z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                  <SendIcon />
                 </button>
               </div>
             </div>
@@ -570,14 +534,7 @@ function CommentSection({ postId }: { postId: string }) {
               disabled={createComment.isPending || !newComment.trim()}
               className="shrink-0 border-none bg-transparent text-(--color5) disabled:opacity-40"
             >
-              <svg width="16" height="16" fill="none" viewBox="0 0 14 13">
-                <path
-                  fill="currentColor"
-                  fillRule="evenodd"
-                  d="M6.37 7.879l2.438 3.955a.335.335 0 00.34.162c.068-.01.23-.05.289-.247l3.049-10.297a.348.348 0 00-.09-.35.341.341 0 00-.34-.088L1.75 4.03a.34.34 0 00-.247.289.343.343 0 00.16.347L5.666 7.17 9.2 3.597a.5.5 0 01.712.703L6.37 7.88z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <SendIcon size={16} />
             </button>
           </div>
         </div>
@@ -705,29 +662,7 @@ export function FeedPostCard({
                 onClick={() => setShowMenu(!showMenu)}
                 className="border-none bg-transparent p-2 text-(--color6)"
               >
-                <svg width="4" height="17" fill="none" viewBox="0 0 4 17">
-                  <circle
-                    cx="2"
-                    cy="2"
-                    r="2"
-                    fill="currentColor"
-                    opacity=".4"
-                  />
-                  <circle
-                    cx="2"
-                    cy="8"
-                    r="2"
-                    fill="currentColor"
-                    opacity=".4"
-                  />
-                  <circle
-                    cx="2"
-                    cy="15"
-                    r="2"
-                    fill="currentColor"
-                    opacity=".4"
-                  />
-                </svg>
+                <ThreeDotMenuVerticalIcon />
               </button>
 
               {showMenu && (
@@ -738,39 +673,12 @@ export function FeedPostCard({
                   >
                     {post.visibility === "PUBLIC" ? (
                       <>
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        >
-                          <rect
-                            x="3"
-                            y="11"
-                            width="18"
-                            height="11"
-                            rx="2"
-                            ry="2"
-                          />
-                          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                        </svg>
+                        <PrivateLockIcon size={16} />
                         Make Private
                       </>
                     ) : (
                       <>
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        >
-                          <circle cx="12" cy="12" r="10" />
-                          <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                        </svg>
+                        <PublicGlobeIcon size={16} />
                         Make Public
                       </>
                     )}
@@ -779,18 +687,7 @@ export function FeedPostCard({
                     onClick={handleDelete}
                     className="w-full text-left px-4 py-2.5 text-sm text-red-500 bg-transparent border-none hover:bg-(--bg3) transition-all flex items-center gap-2.5"
                   >
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" />
-                    </svg>
+                    <TrashIcon size={16} />
                     Delete Post
                   </button>
                 </div>
@@ -889,16 +786,7 @@ export function FeedPostCard({
                 {REACTIONS[currentReaction] || "👍"}
               </span>
             ) : (
-              <svg
-                width="19"
-                height="19"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
-              </svg>
+              <ThumbsUpIcon />
             )}
             {isLiked
               ? currentReaction.charAt(0).toUpperCase() +
@@ -914,18 +802,7 @@ export function FeedPostCard({
               : "text-(--color6) bg-transparent hover:bg-(--color9)"
           }`}
         >
-          <svg width="21" height="21" fill="none" viewBox="0 0 21 21">
-            <path
-              stroke="currentColor"
-              d="M1 10.5c0-.464 0-.696.009-.893A9 9 0 019.607 1.01C9.804 1 10.036 1 10.5 1v0c.464 0 .696 0 .893.009a9 9 0 018.598 8.598c.009.197.009.429.009.893v6.046c0 1.36 0 2.041-.317 2.535a2 2 0 01-.602.602c-.494.317-1.174.317-2.535.317H10.5c-.464 0-.696 0-.893-.009a9 9 0 01-8.598-8.598C1 11.196 1 10.964 1 10.5v0z"
-            />
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M6.938 9.313h7.125M10.5 14.063h3.563"
-            />
-          </svg>
+          <CommentIcon />
           Comment
         </button>
         <button
@@ -935,13 +812,7 @@ export function FeedPostCard({
           }}
           className="flex-1 flex items-center justify-center h-11 gap-2 text-sm font-normal text-(--color6) bg-transparent rounded-md border-none transition-all duration-200 hover:bg-(--color9) cursor-pointer"
         >
-          <svg width="24" height="21" fill="none" viewBox="0 0 24 21">
-            <path
-              stroke="currentColor"
-              strokeLinejoin="round"
-              d="M23 10.5L12.917 1v5.429C3.267 6.429 1 13.258 1 20c2.785-3.52 5.248-5.429 11.917-5.429V20L23 10.5z"
-            />
-          </svg>
+          <ShareIcon />
           Share
         </button>
       </div>

@@ -1,8 +1,9 @@
 "use client";
 
+import { useShareUsers, useSharePost } from "@/hooks/use-share";
+import { CloseIcon } from "@/lib/svg";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useShareUsers, useSharePost } from "@/hooks/use-share";
 
 type Props = {
   isOpen: boolean;
@@ -49,9 +50,7 @@ export default function ShareModal({ isOpen, onClose, postId, mode }: Props) {
             onClick={onClose}
             className="w-8 h-8 rounded-full bg-(--bg3) flex items-center justify-center border-none text-(--color7) hover:bg-(--bg4) transition-all cursor-pointer"
           >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M13 1L1 13M1 1l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
+            <CloseIcon />
           </button>
         </div>
 
