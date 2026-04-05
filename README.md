@@ -127,6 +127,18 @@ buddy-script/
 - Server-side session validation
 - Automatic redirect on 401 responses
 
+#### Why Better Auth instead of a direct OAuth implementation?
+
+While Google OAuth could be wired up directly with a few HTTP calls, this project uses [Better Auth](https://www.better-auth.com/) because it is designed to scale with the application. As the user base and feature set grow, Better Auth provides the following benefits out of the box — benefits that would otherwise require substantial custom code:
+
+- **Centralised session management.** Every login, regardless of provider (email/password, Google, or future providers), creates a session record in the database. This gives a single source of truth for authentication state across the entire application.
+- **Device & session tracking.** Each session stores the IP address, user agent, and creation timestamp, so it is straightforward to show a user the list of devices and browsers they have signed in from, along with _when_ and _how many_ active sessions exist at any given moment.
+- **Granular session invalidation.** Any individual session can be revoked at any time without forcing the user to log out everywhere. This is critical for features such as "Log out from other devices", handling lost/stolen devices, or responding to suspicious activity.
+- **Easy provider extensibility.** Adding GitHub, Apple, Facebook, or magic-link login later requires only a few lines of configuration instead of a full re-implementation of the OAuth dance.
+- **Battle-tested security.** CSRF protection, cookie signing, token rotation, and email verification flows are handled by a maintained library rather than hand-rolled code that can easily drift out of date.
+
+In short, Better Auth is an investment in the long-term maintainability and security of the platform: if Buddy Script grows to support multiple login methods, team accounts, or session audit logs, the required infrastructure is already in place.
+
 ### Posts
 
 - Create posts with optional image upload (S3/MinIO)
