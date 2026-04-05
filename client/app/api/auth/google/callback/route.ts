@@ -13,7 +13,13 @@ export async function GET(req: NextRequest) {
   const refreshTokenMaxAge = params.get("refreshTokenMaxAge");
   const sessionTokenMaxAge = params.get("sessionTokenMaxAge");
 
-  const baseUrl = req.nextUrl.origin;
+  // In production behind a reverse proxy, req.nextUrl.origin is the internal
+  // container host. Prefer forwarded headers, then env, then fall back.
+  const forwardedHost = req.headers.get("x-forwarded-host");
+  const forwardedProto = req.headers.get("x-forwarded-proto") || "https";
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (forwardedHost ? `${forwardedProto}://${forwardedHost}` : req.nextUrl.origin);
 
   if (success === "true" && accessToken && refreshToken && sessionToken) {
     await setAuthCookies({
