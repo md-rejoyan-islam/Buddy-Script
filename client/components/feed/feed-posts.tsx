@@ -503,10 +503,18 @@ function CommentItem({
 /* ─── Comment Section ───────────────────────────── */
 
 function CommentSection({ postId }: { postId: string }) {
-  const { data: comments, isLoading } = useComments(postId);
+  const {
+    data,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useComments(postId);
   const { data: currentUser } = useCurrentUser();
   const createComment = useCreateComment(postId);
   const [newComment, setNewComment] = useState("");
+
+  const comments = data?.pages.flatMap((p) => p.comments) ?? [];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -553,7 +561,7 @@ function CommentSection({ postId }: { postId: string }) {
         </div>
       )}
 
-      {comments?.map((comment) => (
+      {comments.map((comment) => (
         <CommentItem
           key={comment.id}
           comment={comment}
@@ -562,7 +570,20 @@ function CommentSection({ postId }: { postId: string }) {
         />
       ))}
 
-      {comments && comments.length === 0 && (
+      {hasNextPage && (
+        <div className="flex justify-center mt-2 mb-1">
+          <button
+            type="button"
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
+            className="text-xs font-medium text-(--color5) bg-transparent border-none cursor-pointer hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isFetchingNextPage ? "Loading..." : "View more comments"}
+          </button>
+        </div>
+      )}
+
+      {!isLoading && comments.length === 0 && (
         <p className="text-xs text-(--color7) text-center py-2">
           No comments yet
         </p>

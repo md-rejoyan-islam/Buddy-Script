@@ -1,7 +1,12 @@
 "use client";
 
 import { clientFetch } from "@/lib/client-api";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 export type Reply = {
   id: string;
@@ -34,16 +39,28 @@ export type Comment = {
   likes: { id: string; reaction: string }[];
 };
 
+type CommentsPage = {
+  comments: Comment[];
+  nextCursor: string | null;
+};
+
 export function useComments(postId: string) {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ["comments", postId],
-    queryFn: async () => {
-      const res = await clientFetch<Comment[]>(`/comments/post/${postId}`);
+    queryFn: async ({ pageParam }) => {
+      const params = new URLSearchParams({ limit: "10" });
+      if (pageParam) params.set("cursor", pageParam);
+
+      const res = await clientFetch<CommentsPage>(
+        `/comments/post/${postId}?${params.toString()}`,
+      );
       if (!res.success || !res.data) {
         throw new Error(res.message || "Failed to fetch comments");
       }
       return res.data;
     },
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     enabled: !!postId,
   });
 }

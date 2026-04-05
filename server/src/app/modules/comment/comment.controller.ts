@@ -19,13 +19,18 @@ export const commentController = {
 
   getByPostId: asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user!.id;
-    const comments = await commentService.getByPostId(
+    const cursor = req.query.cursor as string | undefined;
+    const limit = req.query.limit ? Number(req.query.limit) : 10;
+
+    const { data, nextCursor } = await commentService.getByPostId(
       req.params.postId as string,
       userId,
+      { cursor, limit },
     );
+
     sendSuccessResponse(res, {
       message: "Comments fetched successfully",
-      data: comments,
+      data: { comments: data, nextCursor },
     });
   }),
 

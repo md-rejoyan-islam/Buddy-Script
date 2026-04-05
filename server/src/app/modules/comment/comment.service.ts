@@ -29,14 +29,27 @@ export const commentService = {
     return comment;
   },
 
-  async getByPostId(postId: string, currentUserId: string) {
-    const cacheKey = `comments:${postId}:${currentUserId}`;
-    const cached = await cache.get(cacheKey);
+  async getByPostId(
+    postId: string,
+    currentUserId: string,
+    { cursor, limit = 10 }: { cursor?: string; limit?: number } = {},
+  ) {
+    const safeLimit = Math.min(Math.max(limit, 1), 50);
+    const cacheKey = `comments:${postId}:${currentUserId}:${cursor || "first"}:${safeLimit}`;
+    const cached = await cache.get<{
+      data: unknown[];
+      nextCursor: string | null;
+    }>(cacheKey);
     if (cached) return cached;
 
-    const comments = await prisma.comment.findMany({
+    const rows = await prisma.comment.findMany({
       where: { postId, isDeleted: false },
       orderBy: { createdAt: "asc" },
+      take: safeLimit + 1,
+      ...(cursor && {
+        cursor: { id: cursor },
+        skip: 1,
+      }),
       include: {
         author: {
           select: { id: true, firstName: true, lastName: true, image: true },
@@ -49,9 +62,14 @@ export const commentService = {
       },
     });
 
-    await cache.set(cacheKey, comments, COMMENTS_TTL);
+    const hasMore = rows.length > safeLimit;
+    const data = hasMore ? rows.slice(0, safeLimit) : rows;
+    const nextCursor = hasMore ? data[data.length - 1].id : null;
 
-    return comments;
+    const result = { data, nextCursor };
+    await cache.set(cacheKey, result, COMMENTS_TTL);
+
+    return result;
   },
 
   async update(commentId: string, authorId: string, data: UpdateCommentInput) {

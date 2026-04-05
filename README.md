@@ -162,6 +162,7 @@ In short, Better Auth is an investment in the long-term maintainability and secu
 - Nested replies on any comment
 - Reactions on comments and replies
 - Inline edit and three-dot menu for owner actions
+- **Cursor-based pagination** — comments load 10 at a time with a **"View more comments"** button that fetches the next page on demand
 
 ### Sharing
 
@@ -284,12 +285,14 @@ All backend routes are prefixed with `/api/v1`. Authenticated routes require a v
 
 ### Comments — `/api/v1/comments`
 
-| Method   | Path            | Description                        | Auth |
-| -------- | --------------- | ---------------------------------- | ---- |
-| `GET`    | `/post/:postId` | List comments for a post           | ✅   |
-| `POST`   | `/post/:postId` | Create a comment                   | ✅   |
-| `PATCH`  | `/:id`          | Update a comment (owner only)      | ✅   |
-| `DELETE` | `/:id`          | Soft-delete a comment (owner only) | ✅   |
+| Method   | Path            | Description                                                            | Auth |
+| -------- | --------------- | ---------------------------------------------------------------------- | ---- |
+| `GET`    | `/post/:postId` | List comments for a post (paginated, query: `cursor`, `limit` max 50)  | ✅   |
+| `POST`   | `/post/:postId` | Create a comment                                                       | ✅   |
+| `PATCH`  | `/:id`          | Update a comment (owner only)                                          | ✅   |
+| `DELETE` | `/:id`          | Soft-delete a comment (owner only)                                     | ✅   |
+
+The list endpoint returns `{ comments: Comment[], nextCursor: string | null }` with a default page size of 10.
 
 ### Replies — `/api/v1/replies`
 
@@ -360,7 +363,7 @@ The server uses Redis to cache every read endpoint. Cache keys and TTLs are:
 | -------------------------------- | ----- | --------------------------------------------------------------------- |
 | `feed:{userId}:{cursor}:{limit}` | 60 s  | Post create/update/delete, like on post, comment create/delete, share |
 | `post:{postId}:{userId}`         | 120 s | Post update/delete, like on post, share                               |
-| `comments:{postId}:{userId}`     | 120 s | Comment create/update/delete, like on comment, reply create/delete    |
+| `comments:{postId}:{userId}:{cursor}:{limit}` | 120 s | Comment create/update/delete, like on comment, reply create/delete    |
 | `replies:{commentId}:{userId}`   | 120 s | Reply create/update/delete, like on reply                             |
 | `likes:{type}:{id}`              | 120 s | Any like toggled on the subject                                       |
 | `shares:{postId}`                | 120 s | Share created                                                         |
