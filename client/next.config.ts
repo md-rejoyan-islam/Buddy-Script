@@ -8,13 +8,10 @@ const nextConfig: NextConfig = {
         source: "/api/v1/:path*",
         destination: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/:path*`,
       },
-      {
-        source: "/storage/:path*",
-        destination: `${process.env.NEXT_PUBLIC_S3_ENDPOINT}/:path*`,
-      },
     ];
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "http",
