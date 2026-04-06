@@ -613,7 +613,7 @@ export function FeedPostCard({
   const menuRef = useRef<HTMLDivElement>(null);
 
   const authorName = `${post.author.firstName} ${post.author.lastName}`;
-  const authorImage = post.author.image || "/images/post_img.png";
+  const authorImage = post.author.image || "/images/Avatar.png";
   const timeAgo = formatDistanceToNow(post.createdAt);
 
   // Close menu on outside click

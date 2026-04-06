@@ -81,7 +81,7 @@ export default function LikesModal({ isOpen, onClose, type, id }: Props) {
                 <Image
                   width={40}
                   height={40}
-                  src={like.user.image || "/images/post_img.png"}
+                  src={like.user.image || "/images/Avatar.png"}
                   alt={`${like.user.firstName} ${like.user.lastName}`}
                   className="w-10 h-10 rounded-full object-cover"
                 />

@@ -32,5 +32,11 @@ export default async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/feed", "/login", "/registration"],
+  matcher: [
+    "/",
+    "/feed",
+    "/login",
+    "/registration",
+    "/((?!_next/static|_next/image|.*\\.png$).*)",
+  ],
 };

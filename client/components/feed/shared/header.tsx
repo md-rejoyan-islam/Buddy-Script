@@ -54,7 +54,7 @@ export default function Header() {
   const router = useRouter();
 
   const userName = user ? `${user.firstName} ${user.lastName}` : "Loading...";
-  const userImage = user?.image || "/images/profile.png";
+  const userImage = user?.image || "/images/Avatar.png";
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {

@@ -2,6 +2,7 @@ import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import crypto from "crypto";
 import path from "path";
 import { S3_BUCKET, s3Client } from "../../config/s3";
+import secret from "../../config/secret";
 
 export async function uploadImage(
   file: Express.Multer.File,
@@ -19,7 +20,7 @@ export async function uploadImage(
     }),
   );
 
-  return `/storage/${S3_BUCKET}/${key}`;
+  return `${secret.s3_endpoint}/${S3_BUCKET}/${key}`;
 }
 
 export async function deleteImage(imageUrl: string): Promise<void> {
