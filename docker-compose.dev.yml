@@ -1,8 +1,16 @@
+# ============================================================================
+# Buddy Script — Development Docker Compose
+# Usage: docker compose -f docker-compose.dev.yml up
+#
+# - Live reload on file changes (volumes mount source code)
+# - Logs visible in terminal
+# - No build step needed for code changes
+# ============================================================================
+
 services:
   postgres:
     image: postgres:16-alpine
     container_name: buddy-script-postgres
-    restart: unless-stopped
     env_file:
       - .env
     environment:
@@ -24,7 +32,6 @@ services:
   redis:
     image: redis:7-alpine
     container_name: buddy-script-redis
-    restart: unless-stopped
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
@@ -41,7 +48,6 @@ services:
   minio:
     image: minio/minio:latest
     container_name: buddy-script-minio
-    restart: unless-stopped
     command: server /data --console-address ":9001"
     env_file:
       - .env
@@ -51,8 +57,8 @@ services:
     volumes:
       - minio_data:/data
     ports:
-      - "9000:9000" # S3 API
-      - "9001:9001" # Web console
+      - "9000:9000"
+      - "9001:9001"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 10s
@@ -61,7 +67,6 @@ services:
     networks:
       - buddy-script-network
 
-  # One-shot job to ensure the bucket exists after MinIO boots
   minio-init:
     image: minio/mc:latest
     container_name: buddy-script-minio-init
@@ -80,13 +85,14 @@ services:
       - buddy-script-network
 
   server:
-    build:
-      context: ./server
-      dockerfile: Dockerfile
+    image: oven/bun:1
     container_name: buddy-script-server
-    restart: unless-stopped
+    working_dir: /app
+    command: sh -c "bun install && bunx prisma generate && bun --watch src/server.ts"
     env_file:
-      - .env
+      - ./server/.env
+    volumes:
+      - ./server:/app
     ports:
       - "5000:5000"
     depends_on:
@@ -102,16 +108,16 @@ services:
       - buddy-script-network
 
   client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile
+    image: oven/bun:1
     container_name: buddy-script-client
-    restart: unless-stopped
+    working_dir: /app
+    command: sh -c "bun install && bun run dev"
     env_file:
-      - .env
+      - ./client/.env
     environment:
       NEXT_PUBLIC_API_URL: http://server:5000
-      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+    volumes:
+      - ./client:/app
     ports:
       - "3000:3000"
     depends_on:

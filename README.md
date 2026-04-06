@@ -139,6 +139,29 @@ While Google OAuth could be wired up directly with a few HTTP calls, this projec
 
 In short, Better Auth is an investment in the long-term maintainability and security of the platform: if Buddy Script grows to support multiple login methods, team accounts, or session audit logs, the required infrastructure is already in place.
 
+#### Why Redis for caching?
+
+This project uses **Redis** as a caching layer between the Express API and PostgreSQL. Every read endpoint (feed, comments, replies, likes, shares, user profiles) is cached in Redis with a defined TTL. When a mutation occurs (e.g. a user likes a post, creates a comment, or deletes a reply), the relevant cache keys are invalidated immediately using pattern-based deletion (`cache.delByPattern`).
+
+This approach provides:
+
+- **Reduced database load.** Frequently accessed data like the feed and comments are served from Redis instead of hitting PostgreSQL on every request.
+- **Faster response times.** Redis responses are sub-millisecond compared to multi-table Prisma queries.
+- **Predictable invalidation.** Every write operation has a well-defined set of cache keys it clears, ensuring users always see fresh data after mutations while still benefiting from caching on reads.
+- **Scalability.** As the user base grows, the caching layer absorbs the majority of read traffic, allowing PostgreSQL to focus on writes and complex queries.
+
+See the [Caching Strategy](#caching-strategy) section for the full cache key map and invalidation rules.
+
+#### Why MinIO for file storage?
+
+All user-uploaded images (post images, profile pictures) are stored in **MinIO**, an S3-compatible object storage server. MinIO was chosen over storing files on disk or in the database for several reasons:
+
+- **S3-compatible API.** The application uses the standard AWS S3 SDK (`@aws-sdk/client-s3`) to interact with MinIO. If the project ever migrates to AWS S3, Cloudflare R2, or any other S3-compatible provider, the switch requires only changing environment variables — zero code changes.
+- **Separation of concerns.** Static files are kept out of the application server and the database, making the backend stateless and easier to scale horizontally.
+- **Self-hosted control.** Unlike cloud-only solutions, MinIO can run on your own infrastructure via Docker, giving full control over data residency, cost, and bandwidth.
+- **Persistent storage.** MinIO data is stored on a Docker volume, so images survive container restarts and re-deployments.
+- **Public read access.** A bucket policy is applied on startup that grants public read access to uploaded images, so browsers can load them directly without authentication.
+
 ### Posts
 
 - Create posts with optional image upload (S3/MinIO)
@@ -285,12 +308,12 @@ All backend routes are prefixed with `/api/v1`. Authenticated routes require a v
 
 ### Comments — `/api/v1/comments`
 
-| Method   | Path            | Description                                                            | Auth |
-| -------- | --------------- | ---------------------------------------------------------------------- | ---- |
-| `GET`    | `/post/:postId` | List comments for a post (paginated, query: `cursor`, `limit` max 50)  | ✅   |
-| `POST`   | `/post/:postId` | Create a comment                                                       | ✅   |
-| `PATCH`  | `/:id`          | Update a comment (owner only)                                          | ✅   |
-| `DELETE` | `/:id`          | Soft-delete a comment (owner only)                                     | ✅   |
+| Method   | Path            | Description                                                           | Auth |
+| -------- | --------------- | --------------------------------------------------------------------- | ---- |
+| `GET`    | `/post/:postId` | List comments for a post (paginated, query: `cursor`, `limit` max 50) | ✅   |
+| `POST`   | `/post/:postId` | Create a comment                                                      | ✅   |
+| `PATCH`  | `/:id`          | Update a comment (owner only)                                         | ✅   |
+| `DELETE` | `/:id`          | Soft-delete a comment (owner only)                                    | ✅   |
 
 The list endpoint returns `{ comments: Comment[], nextCursor: string | null }` with a default page size of 10.
 
@@ -359,15 +382,15 @@ All relational IDs use UUID v7 for ordered, time-sortable primary keys.
 
 The server uses Redis to cache every read endpoint. Cache keys and TTLs are:
 
-| Key Pattern                      | TTL   | Invalidation Trigger                                                  |
-| -------------------------------- | ----- | --------------------------------------------------------------------- |
-| `feed:{userId}:{cursor}:{limit}` | 60 s  | Post create/update/delete, like on post, comment create/delete, share |
-| `post:{postId}:{userId}`         | 120 s | Post update/delete, like on post, share                               |
+| Key Pattern                                   | TTL   | Invalidation Trigger                                                  |
+| --------------------------------------------- | ----- | --------------------------------------------------------------------- |
+| `feed:{userId}:{cursor}:{limit}`              | 60 s  | Post create/update/delete, like on post, comment create/delete, share |
+| `post:{postId}:{userId}`                      | 120 s | Post update/delete, like on post, share                               |
 | `comments:{postId}:{userId}:{cursor}:{limit}` | 120 s | Comment create/update/delete, like on comment, reply create/delete    |
-| `replies:{commentId}:{userId}`   | 120 s | Reply create/update/delete, like on reply                             |
-| `likes:{type}:{id}`              | 120 s | Any like toggled on the subject                                       |
-| `shares:{postId}`                | 120 s | Share created                                                         |
-| `user:{userId}`                  | 300 s | (refreshed on TTL expiry)                                             |
+| `replies:{commentId}:{userId}`                | 120 s | Reply create/update/delete, like on reply                             |
+| `likes:{type}:{id}`                           | 120 s | Any like toggled on the subject                                       |
+| `shares:{postId}`                             | 120 s | Share created                                                         |
+| `user:{userId}`                               | 300 s | (refreshed on TTL expiry)                                             |
 
 Mutations use `cache.delByPattern()` to invalidate groups of keys, ensuring no stale data is served.
 
