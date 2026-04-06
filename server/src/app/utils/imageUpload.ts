@@ -20,7 +20,7 @@ export async function uploadImage(
     }),
   );
 
-  return `${secret.s3_endpoint}/${S3_BUCKET}/${key}`;
+  return `${secret.s3_public_url}/${S3_BUCKET}/${key}`;
 }
 
 export async function deleteImage(imageUrl: string): Promise<void> {

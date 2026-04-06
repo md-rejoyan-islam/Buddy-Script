@@ -503,13 +503,8 @@ function CommentItem({
 /* ─── Comment Section ───────────────────────────── */
 
 function CommentSection({ postId }: { postId: string }) {
-  const {
-    data,
-    isLoading,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useComments(postId);
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useComments(postId);
   const { data: currentUser } = useCurrentUser();
   const createComment = useCreateComment(postId);
   const [newComment, setNewComment] = useState("");

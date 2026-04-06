@@ -108,12 +108,11 @@ export const commentService = {
       data: { isDeleted: true, deletedAt: new Date() },
     });
 
-    // Invalidate feed (count changed) + comments cache
+    // Invalidate caches BEFORE returning so the subsequent
+    // refetch from the client sees fresh data, not stale cache
     if (comment) {
-      await Promise.all([
-        cache.delByPattern("feed:*"),
-        cache.delByPattern(`comments:${comment.postId}:*`),
-      ]);
+      await cache.delByPattern(`comments:${comment.postId}:*`);
+      await cache.delByPattern("feed:*");
     }
 
     return result;

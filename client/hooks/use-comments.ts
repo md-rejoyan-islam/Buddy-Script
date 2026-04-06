@@ -7,6 +7,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import type { Post } from "./use-feed";
 
 export type Reply = {
   id: string;
@@ -104,30 +105,38 @@ export function useLikeComment(postId: string) {
     },
     onMutate: async ({ commentId, reaction = "like" }) => {
       await queryClient.cancelQueries({ queryKey: ["comments", postId] });
-      const previous = queryClient.getQueryData<Comment[]>([
-        "comments",
-        postId,
-      ]);
+      const previous = queryClient.getQueryData(["comments", postId]);
 
-      queryClient.setQueryData<Comment[]>(["comments", postId], (old) =>
-        old?.map((c) => {
-          if (c.id !== commentId) return c;
-          const isLiked = c.likes.length > 0;
-          const sameReaction = isLiked && c.likes[0]?.reaction === reaction;
-          return {
-            ...c,
-            likes: sameReaction ? [] : [{ id: "optimistic", reaction }],
-            _count: {
-              ...c._count,
-              likes: sameReaction
-                ? c._count.likes - 1
-                : isLiked
-                  ? c._count.likes
-                  : c._count.likes + 1,
-            },
-          };
-        }),
-      );
+      queryClient.setQueryData(["comments", postId], (old: unknown) => {
+        if (!old || typeof old !== "object") return old;
+        const data = old as {
+          pages: { comments: Comment[]; nextCursor: string | null }[];
+          pageParams: unknown[];
+        };
+        return {
+          ...data,
+          pages: data.pages.map((page) => ({
+            ...page,
+            comments: page.comments.map((c) => {
+              if (c.id !== commentId) return c;
+              const isLiked = c.likes.length > 0;
+              const sameReaction = isLiked && c.likes[0]?.reaction === reaction;
+              return {
+                ...c,
+                likes: sameReaction ? [] : [{ id: "optimistic", reaction }],
+                _count: {
+                  ...c._count,
+                  likes: sameReaction
+                    ? c._count.likes - 1
+                    : isLiked
+                      ? c._count.likes
+                      : c._count.likes + 1,
+                },
+              };
+            }),
+          })),
+        };
+      });
 
       return { previous };
     },
@@ -153,7 +162,52 @@ export function useDeleteComment(postId: string) {
       if (!res.success) throw new Error(res.message);
       return res.data;
     },
-    onSuccess: () => {
+    onMutate: async (commentId) => {
+      // Optimistically remove from comments list
+      await queryClient.cancelQueries({ queryKey: ["comments", postId] });
+      queryClient.setQueryData(["comments", postId], (old: unknown) => {
+        if (!old || typeof old !== "object") return old;
+        const data = old as {
+          pages: { comments: Comment[]; nextCursor: string | null }[];
+          pageParams: unknown[];
+        };
+        return {
+          ...data,
+          pages: data.pages.map((page) => ({
+            ...page,
+            comments: page.comments.filter((c) => c.id !== commentId),
+          })),
+        };
+      });
+
+      // Optimistically decrement comment count on the post in the feed
+      await queryClient.cancelQueries({ queryKey: ["posts", "feed"] });
+      queryClient.setQueryData(["posts", "feed"], (old: unknown) => {
+        if (!old || typeof old !== "object") return old;
+        const data = old as {
+          pages: { posts: Post[]; nextCursor: string | null }[];
+          pageParams: unknown[];
+        };
+        return {
+          ...data,
+          pages: data.pages.map((page) => ({
+            ...page,
+            posts: page.posts.map((p) =>
+              p.id !== postId
+                ? p
+                : {
+                    ...p,
+                    _count: {
+                      ...p._count,
+                      comments: Math.max(0, p._count.comments - 1),
+                    },
+                  },
+            ),
+          })),
+        };
+      });
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["comments", postId] });
       queryClient.invalidateQueries({ queryKey: ["posts", "feed"] });
     },

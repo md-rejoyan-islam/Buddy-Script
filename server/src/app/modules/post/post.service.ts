@@ -16,7 +16,7 @@ export const postService = {
         author: {
           select: { id: true, firstName: true, lastName: true, image: true },
         },
-        _count: { select: { likes: true, comments: true, shares: true } },
+        _count: { select: { likes: true, comments: { where: { isDeleted: false } }, shares: true } },
       },
     });
 
@@ -52,7 +52,7 @@ export const postService = {
         author: {
           select: { id: true, firstName: true, lastName: true, image: true },
         },
-        _count: { select: { likes: true, comments: true, shares: true } },
+        _count: { select: { likes: true, comments: { where: { isDeleted: false } }, shares: true } },
         likes: {
           where: { userId: currentUserId, likeableType: "POST" },
           select: { id: true, reaction: true },
@@ -112,7 +112,7 @@ export const postService = {
         author: {
           select: { id: true, firstName: true, lastName: true, image: true },
         },
-        _count: { select: { likes: true, comments: true, shares: true } },
+        _count: { select: { likes: true, comments: { where: { isDeleted: false } }, shares: true } },
         likes: {
           where: { userId: currentUserId, likeableType: "POST" },
           select: { id: true, reaction: true },
@@ -152,7 +152,7 @@ export const postService = {
         author: {
           select: { id: true, firstName: true, lastName: true, image: true },
         },
-        _count: { select: { likes: true, comments: true, shares: true } },
+        _count: { select: { likes: true, comments: { where: { isDeleted: false } }, shares: true } },
       },
     });
 

@@ -21,6 +21,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "minio.rejoyan.me",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
         hostname: "lh3.googleusercontent.com",
         pathname: "**",
       },
