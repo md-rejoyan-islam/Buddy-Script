@@ -8,6 +8,10 @@ const nextConfig: NextConfig = {
         source: "/api/v1/:path*",
         destination: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/:path*`,
       },
+      {
+        source: "/storage/:path*",
+        destination: `${process.env.NEXT_PUBLIC_S3_ENDPOINT}/:path*`,
+      },
     ];
   },
   images: {
@@ -17,11 +21,6 @@ const nextConfig: NextConfig = {
         protocol: "http",
         hostname: "103.84.157.91",
         port: "9000",
-        pathname: "**",
-      },
-      {
-        protocol: "https",
-        hostname: "minio.rejoyan.me",
         pathname: "**",
       },
       {

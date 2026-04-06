@@ -24,7 +24,6 @@ const envSchema = z.object({
   S3_ACCESS_KEY: z.string().min(1, "S3_ACCESS_KEY is required"),
   S3_SECRET_KEY: z.string().min(1, "S3_SECRET_KEY is required"),
   S3_BUCKET: z.string().min(1, "S3_BUCKET is required"),
-  S3_PUBLIC_URL: z.string().optional(),
 
   // CORS
   CLIENT_WHITE_LIST: z.string().min(1, "CLIENT_WHITE_LIST is required"),
@@ -69,7 +68,6 @@ const secret = {
   s3_access_key: env.S3_ACCESS_KEY,
   s3_secret_key: env.S3_SECRET_KEY,
   s3_bucket: env.S3_BUCKET,
-  s3_public_url: env.S3_PUBLIC_URL || env.S3_ENDPOINT,
   clientWhiteList: env.CLIENT_WHITE_LIST.split(",").map((url) => url.trim()),
   redis_url: env.REDIS_URL,
   client_url: env.CLIENT_URL,
